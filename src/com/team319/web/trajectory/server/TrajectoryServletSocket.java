@@ -3,6 +3,7 @@ package com.team319.web.trajectory.server;
 
 import java.io.IOException;
 
+import org.eclipse.jetty.websocket.api.RemoteEndpoint;
 import org.eclipse.jetty.websocket.api.WebSocketAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,9 +36,9 @@ public class TrajectoryServletSocket extends WebSocketAdapter implements Traject
 
         config = new TrajectoryGenerator.Config();
     	config.dt = .01;
-    	config.max_acc = 2;
-    	config.max_jerk = 20.0;
-    	config.max_vel = 3.0;
+    	config.max_acc = 3;
+    	config.max_jerk = 6;
+    	config.max_vel = 15;
     }
 
     @Override
@@ -69,6 +70,9 @@ public class TrajectoryServletSocket extends WebSocketAdapter implements Traject
         	ObjectMapper mapper = new ObjectMapper();
 
         	try {
+
+        		logger.info("Received Message: " + message);
+
         		//lets try to build a path out of the message
     			BobPath waypoints = mapper.readValue(message, BobPath.class);
     			WaypointSequence sequence = waypoints.toWaypointSequence();
@@ -76,6 +80,7 @@ public class TrajectoryServletSocket extends WebSocketAdapter implements Traject
     			//looks good, let's generate a chezy path and trajectory
 
     			Path path = PathGenerator.makePath(sequence, config, kWheelbaseWidth, PATH_NAME);
+
 
     			SRXTranslator srxt = new SRXTranslator();
     			CombinedSrxMotionProfile combined = srxt.getSrxProfileFromChezyPath(path, 5.875, 1.57);//2.778);
@@ -102,9 +107,20 @@ public class TrajectoryServletSocket extends WebSocketAdapter implements Traject
 		ObjectMapper mapper = new ObjectMapper();
 
 		try {
+
+
 			String combinedJson = mapper.writeValueAsString(combined);
 
-			getRemote().sendString(combinedJson);
+			logger.info(combinedJson);
+
+			RemoteEndpoint remote = getRemote();
+
+			if(remote != null){
+				remote.sendString(combinedJson);
+			}else{
+				logger.error("The client has disconnected");
+			}
+
 		} catch (IOException e) {
 			logger.error("Unable to Write Object");
 		} catch (Exception e){

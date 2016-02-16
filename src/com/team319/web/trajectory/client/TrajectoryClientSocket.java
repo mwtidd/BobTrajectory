@@ -82,7 +82,7 @@ public class TrajectoryClientSocket extends WebSocketAdapter implements PathChan
 
 
 
-    	logger.info(message);
+    	//logger.info(message);
     }
 
     @Override

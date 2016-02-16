@@ -29,9 +29,11 @@ public class TrajectoryClientMain {
 		try {
 			TrajectoryClient.start("localhost");
 
+			Thread.sleep(2000);
+
 			List<Waypoint> waypoints = new ArrayList<Waypoint>();
 			waypoints.add(new Waypoint(0,0,0));
-			waypoints.add(new Waypoint(9,3,0));
+			waypoints.add(new Waypoint(15,0,0));
 
 			PathManager.getInstance().setWaypoints(waypoints);
 		} catch (Exception e) {
