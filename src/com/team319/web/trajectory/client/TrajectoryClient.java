@@ -35,7 +35,7 @@ public class TrajectoryClient {
 			@Override
 			public void run() {
 				boolean connected = false;
-				while(!connected && !Thread.interrupted()){
+				while(!connected){
 					//keep trying to connect
 			    	try{
 			        	client.start();
@@ -71,7 +71,6 @@ public class TrajectoryClient {
 		        }
 			}
 		}).start();
-
 
     }
 
