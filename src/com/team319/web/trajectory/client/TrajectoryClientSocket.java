@@ -15,10 +15,10 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.team319.trajectory.Waypoint;
 import com.team319.trajectory.TrajectoryManager;
-import com.team319.trajectory.BobPath;
+import com.team319.trajectory.WaypointList;
 import com.team319.trajectory.CombinedSrxMotionProfile;
-import com.team319.trajectory.PathChangeListener;
-import com.team319.trajectory.PathManager;
+import com.team319.trajectory.IWaypointChangeListener;
+import com.team319.trajectory.WaypointManager;
 
 /**
  * This is meant to run locally on the robot
@@ -28,23 +28,23 @@ import com.team319.trajectory.PathManager;
  * @author mwtidd
  *
  */
-public class TrajectoryClientSocket extends WebSocketAdapter implements PathChangeListener{
+public class TrajectoryClientSocket extends WebSocketAdapter implements IWaypointChangeListener{
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	public TrajectoryClientSocket(){
-		PathManager.getInstance().registerListener(this);
+		WaypointManager.getInstance().registerListener(this);
 	}
 
 	@Override
 	public void onWebSocketClose(int statusCode, String reason) {
-		PathManager.getInstance().unregisterListener(this);
+		WaypointManager.getInstance().unregisterListener(this);
 		super.onWebSocketClose(statusCode, reason);
 	}
 
 	@Override
 	public void onWebSocketError(Throwable cause) {
-		PathManager.getInstance().unregisterListener(this);
+		WaypointManager.getInstance().unregisterListener(this);
 		super.onWebSocketError(cause);
 	}
 
@@ -91,7 +91,7 @@ public class TrajectoryClientSocket extends WebSocketAdapter implements PathChan
     }
 
     @Override
-    public void onPathChange(BobPath path) {
+    public void onWaypointChange(WaypointList path) {
     	ObjectMapper mapper = new ObjectMapper();
 		try {
 			String pathJson = mapper.writeValueAsString(path);

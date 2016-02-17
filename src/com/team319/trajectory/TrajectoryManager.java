@@ -21,12 +21,12 @@ public class TrajectoryManager {
 
 	private static TrajectoryManager instance = null;
 
-	private List<TrajectoryChangeListener> listeners;
+	private List<ITrajectoryChangeListener> listeners;
 
 	private CombinedSrxMotionProfile latestProfile;
 
 	private TrajectoryManager(){
-		listeners = new ArrayList<TrajectoryChangeListener>();
+		listeners = new ArrayList<ITrajectoryChangeListener>();
 		latestProfile = null;
 	}
 
@@ -37,18 +37,18 @@ public class TrajectoryManager {
 		return instance;
 	}
 
-	public void registerListener(TrajectoryChangeListener listener){
+	public void registerListener(ITrajectoryChangeListener listener){
 		this.listeners.add(listener);
 	}
 
-	public void unregisterListener(TrajectoryChangeListener listener){
+	public void unregisterListener(ITrajectoryChangeListener listener){
 		this.listeners.remove(listener);
 	}
 
 	public void setLatestProfile(CombinedSrxMotionProfile latestProfile){
 		//the profile has changed, we should let everyone know
 		this.latestProfile = latestProfile;
-		for(TrajectoryChangeListener listener : listeners){
+		for(ITrajectoryChangeListener listener : listeners){
 			listener.onTrajectoryChange(latestProfile);
 		}
 	}

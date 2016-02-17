@@ -3,6 +3,8 @@ package com.team319.web.waypoint.client;
 import java.io.IOException;
 import java.util.List;
 
+import javax.imageio.ImageTranscoder;
+
 import org.eclipse.jetty.websocket.api.RemoteEndpoint;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.WebSocketAdapter;
@@ -18,13 +20,13 @@ import com.team254.lib.trajectory.PathGenerator;
 import com.team254.lib.trajectory.WaypointSequence;
 import com.team319.trajectory.Waypoint;
 import com.team319.trajectory.TrajectoryManager;
-import com.team319.trajectory.BobPath;
+import com.team319.trajectory.WaypointList;
 import com.team319.trajectory.CombinedSrxMotionProfile;
 import com.team319.trajectory.DriveConfigManager;
-import com.team319.trajectory.PathChangeListener;
-import com.team319.trajectory.PathManager;
+import com.team319.trajectory.IWaypointChangeListener;
+import com.team319.trajectory.WaypointManager;
 import com.team319.trajectory.SRXTranslator;
-import com.team319.trajectory.TrajectoryChangeListener;
+import com.team319.trajectory.ITrajectoryChangeListener;
 
 /**
  * This is meant to run on the Kangaroo or the Driver Station
@@ -36,7 +38,7 @@ import com.team319.trajectory.TrajectoryChangeListener;
  * @author mwtidd
  *
  */
-public class WaypointClientSocket extends WebSocketAdapter implements TrajectoryChangeListener{
+public class WaypointClientSocket extends WebSocketAdapter implements ITrajectoryChangeListener{
 
 	private final double WHEELBASE_WIDTH = 23.25 / 12; //TODO: this should really be configurable
 
@@ -84,7 +86,7 @@ public class WaypointClientSocket extends WebSocketAdapter implements Trajectory
         		logger.info("Received Message: " + message);
 
         		//lets try to build a path out of the message
-    			BobPath waypoints = mapper.readValue(message, BobPath.class);
+    			WaypointList waypoints = mapper.readValue(message, WaypointList.class);
     			WaypointSequence sequence = waypoints.toWaypointSequence();
 
     			//looks good, let's generate a chezy path and trajectory
