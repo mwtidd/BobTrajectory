@@ -1,4 +1,4 @@
-package com.team319.trajectory;
+package com.team319.waypoint;
 
 import org.json.simple.JSONObject;
 

@@ -15,11 +15,11 @@ import com.team254.lib.trajectory.Path;
 import com.team254.lib.trajectory.PathGenerator;
 import com.team254.lib.trajectory.TrajectoryGenerator;
 import com.team254.lib.trajectory.WaypointSequence;
-import com.team319.trajectory.WaypointList;
 import com.team319.trajectory.CombinedSrxMotionProfile;
 import com.team319.trajectory.SRXTranslator;
 import com.team319.trajectory.ITrajectoryChangeListener;
 import com.team319.trajectory.TrajectoryManager;
+import com.team319.waypoint.WaypointList;
 
 public class TrajectoryServletSocket extends WebSocketAdapter implements ITrajectoryChangeListener{
 

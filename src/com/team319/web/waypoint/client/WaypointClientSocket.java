@@ -18,13 +18,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.team254.lib.trajectory.Path;
 import com.team254.lib.trajectory.PathGenerator;
 import com.team254.lib.trajectory.WaypointSequence;
-import com.team319.trajectory.Waypoint;
 import com.team319.trajectory.TrajectoryManager;
-import com.team319.trajectory.WaypointList;
+import com.team319.waypoint.IWaypointChangeListener;
+import com.team319.waypoint.Waypoint;
+import com.team319.waypoint.WaypointList;
+import com.team319.waypoint.WaypointManager;
 import com.team319.trajectory.CombinedSrxMotionProfile;
 import com.team319.trajectory.DriveConfigManager;
-import com.team319.trajectory.IWaypointChangeListener;
-import com.team319.trajectory.WaypointManager;
 import com.team319.trajectory.SRXTranslator;
 import com.team319.trajectory.ITrajectoryChangeListener;
 

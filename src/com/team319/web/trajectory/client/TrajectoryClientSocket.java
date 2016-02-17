@@ -13,12 +13,12 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.team319.trajectory.Waypoint;
 import com.team319.trajectory.TrajectoryManager;
-import com.team319.trajectory.WaypointList;
+import com.team319.waypoint.IWaypointChangeListener;
+import com.team319.waypoint.Waypoint;
+import com.team319.waypoint.WaypointList;
+import com.team319.waypoint.WaypointManager;
 import com.team319.trajectory.CombinedSrxMotionProfile;
-import com.team319.trajectory.IWaypointChangeListener;
-import com.team319.trajectory.WaypointManager;
 
 /**
  * This is meant to run locally on the robot
