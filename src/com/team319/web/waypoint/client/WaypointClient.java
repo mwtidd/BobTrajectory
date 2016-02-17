@@ -18,7 +18,7 @@ import com.team319.web.trajectory.client.TrajectoryClientSocket;
 /**
  * This is meant to run on the Kangraoo or the Driver Station
  *
- * It can be started from {@link TrajectoryClientMain}
+ * It can be started from {@link WaypointClientMain}
  *
  * It is responsible to establishing a socket connection with the robot
  *
@@ -29,14 +29,30 @@ public class WaypointClient {
 
 	private static Logger logger = LoggerFactory.getLogger(WaypointClient.class);
 
-	/**
-	 *
-	 * @param teamNumber The number of the team according to the robot. It will be accessed via roborio-{Team #}-frc.local.
-	 * @throws Exception
-	 */
-	public static void start(String teamNumber) throws Exception {
+	private static int teamNumber = -1;
+	private static String ipAddress = null;
 
-        URI destUri = new URI("ws://roborio-"+teamNumber+".local:5803/trajectory");
+	public static void start() throws Exception {
+
+		if(teamNumber == -1 && ipAddress == null){
+			throw new Exception("Please provide either an ip address or a team number through thier respective setter.");
+		}else if(teamNumber > -1 && ipAddress != null){
+			throw new Exception("Please provide either an ip address or a team number but not both.");
+		}
+
+		String url = "ws://";
+		if(teamNumber > -1){
+			url += "roborio-"+teamNumber+".local";
+		}else if(ipAddress != null){
+			url += ipAddress;
+		}else{
+			logger.error("Entered what should have been an unreachable state.");
+			throw new Exception("Unknown error");
+		}
+
+		url += ":5804/waypoints";
+
+        URI destUri = new URI(url);
 
         WebSocketClient client = new WebSocketClient();
 
@@ -84,5 +100,13 @@ public class WaypointClient {
 		}).start();
 
     }
+
+	public static void setIpAddress(String ipAddress) {
+		WaypointClient.ipAddress = ipAddress;
+	}
+
+	public static void setTeamNumber(int teamNumber) {
+		WaypointClient.teamNumber = teamNumber;
+	}
 
 }

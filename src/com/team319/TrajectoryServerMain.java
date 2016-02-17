@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.team319.web.trajectory.server.TrajectoryServer;
+import com.team319.web.waypoint.client.WaypointClient;
 
 /**
  * A basic way to fire up a trajectory server.
@@ -23,7 +24,16 @@ public class TrajectoryServerMain {
 
 		logger.info("Starting Trajectory Server");
 
-		TrajectoryServer.startServer();
+
+
+		try {
+			//WaypointClient.setTeamNumber(319);
+			WaypointClient.setIpAddress("localhost");
+			WaypointClient.start();
+			TrajectoryServer.startServer();
+		} catch (Exception e) {
+			logger.error("Error Starting Trajectory Client");
+		}
 	}
 
 }

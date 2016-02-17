@@ -18,6 +18,8 @@ import javax.servlet.DispatcherType;
  * This is expected to be run on the kangaroo or the driver station.
  * It can be started from {@link TrajectoryServerMain}
  *
+ * It sends trajectory updates to any clients that are listening.
+ *
  * @author mwtidd
  *
  */

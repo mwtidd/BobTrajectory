@@ -1,9 +1,14 @@
 package com.team319;
 
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.team319.trajectory.WaypointManager;
+import com.team319.trajectory.Waypoint;
 import com.team319.web.waypoint.server.WaypointServer;
 
 /**
@@ -23,6 +28,7 @@ public class WaypointServerMain {
 		logger.info("Starting the Waypoint Server");
 
 		WaypointServer.startServer();
+
 	}
 
 }

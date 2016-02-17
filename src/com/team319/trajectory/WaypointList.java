@@ -5,14 +5,14 @@ import java.util.List;
 
 import com.team254.lib.trajectory.WaypointSequence;
 
-public class BobPath {
+public class WaypointList {
 	private List<Waypoint> waypoints;
 
-	public BobPath(){
+	public WaypointList(){
 		this.waypoints = new ArrayList<Waypoint>();
 	}
 
-	public BobPath(List<Waypoint> waypoints){
+	public WaypointList(List<Waypoint> waypoints){
 		this.waypoints = waypoints;
 	}
 

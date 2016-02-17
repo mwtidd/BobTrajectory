@@ -33,7 +33,7 @@ public class WaypointServer {
             return;
         }
 
-        server = new Server(5803);
+        server = new Server(5804);
         ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
         context.setContextPath("/");
         server.setHandler(context);
@@ -44,12 +44,12 @@ public class WaypointServer {
         cors.setInitParameter(CrossOriginFilter.ALLOWED_METHODS_PARAM, "GET,POST,HEAD");
         cors.setInitParameter(CrossOriginFilter.ALLOWED_HEADERS_PARAM, "X-Requested-With,Content-Type,Accept,Origin");
 
-        ServletHolder commandHolder = new ServletHolder("trajectory", new WaypointServlet());
-        context.addServlet(commandHolder, "/trajectory");
+        ServletHolder commandHolder = new ServletHolder("waypoints", new WaypointServlet());
+        context.addServlet(commandHolder, "/waypoints");
 
         try {
 			server.start();
-			server.join();
+			//server.join();
 		} catch (Exception e) {
 			logger.error("Unable to start server");
 		}

@@ -6,7 +6,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.team319.trajectory.PathManager;
+import com.team319.trajectory.WaypointManager;
 import com.team319.trajectory.Waypoint;
 import com.team319.web.trajectory.client.TrajectoryClient;
 
@@ -35,7 +35,7 @@ public class TrajectoryClientMain {
 			waypoints.add(new Waypoint(0,0,0));
 			waypoints.add(new Waypoint(15,0,0));
 
-			PathManager.getInstance().setWaypoints(waypoints);
+			WaypointManager.getInstance().setWaypoints(waypoints);
 		} catch (Exception e) {
 			logger.error("Error Starting Trajectory Client");
 		}

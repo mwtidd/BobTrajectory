@@ -15,13 +15,13 @@ import com.team254.lib.trajectory.Path;
 import com.team254.lib.trajectory.PathGenerator;
 import com.team254.lib.trajectory.TrajectoryGenerator;
 import com.team254.lib.trajectory.WaypointSequence;
-import com.team319.trajectory.BobPath;
+import com.team319.trajectory.WaypointList;
 import com.team319.trajectory.CombinedSrxMotionProfile;
 import com.team319.trajectory.SRXTranslator;
-import com.team319.trajectory.TrajectoryChangeListener;
+import com.team319.trajectory.ITrajectoryChangeListener;
 import com.team319.trajectory.TrajectoryManager;
 
-public class TrajectoryServletSocket extends WebSocketAdapter implements TrajectoryChangeListener{
+public class TrajectoryServletSocket extends WebSocketAdapter implements ITrajectoryChangeListener{
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -74,7 +74,7 @@ public class TrajectoryServletSocket extends WebSocketAdapter implements Traject
         		logger.info("Received Message: " + message);
 
         		//lets try to build a path out of the message
-    			BobPath waypoints = mapper.readValue(message, BobPath.class);
+    			WaypointList waypoints = mapper.readValue(message, WaypointList.class);
     			WaypointSequence sequence = waypoints.toWaypointSequence();
 
     			//looks good, let's generate a chezy path and trajectory

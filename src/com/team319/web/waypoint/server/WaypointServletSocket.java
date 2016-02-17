@@ -16,32 +16,32 @@ import com.team254.lib.trajectory.Path;
 import com.team254.lib.trajectory.PathGenerator;
 import com.team254.lib.trajectory.TrajectoryGenerator;
 import com.team254.lib.trajectory.WaypointSequence;
-import com.team319.trajectory.BobPath;
+import com.team319.trajectory.WaypointList;
 import com.team319.trajectory.CombinedSrxMotionProfile;
-import com.team319.trajectory.PathChangeListener;
-import com.team319.trajectory.PathManager;
+import com.team319.trajectory.IWaypointChangeListener;
+import com.team319.trajectory.WaypointManager;
 import com.team319.trajectory.SRXTranslator;
-import com.team319.trajectory.TrajectoryChangeListener;
+import com.team319.trajectory.ITrajectoryChangeListener;
 import com.team319.trajectory.TrajectoryManager;
 
-public class WaypointServletSocket extends WebSocketAdapter implements PathChangeListener{
+public class WaypointServletSocket extends WebSocketAdapter implements IWaypointChangeListener{
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 
     public WaypointServletSocket() {
-    	PathManager.getInstance().registerListener(this);
+    	WaypointManager.getInstance().registerListener(this);
     }
 
     @Override
     public void onWebSocketClose(int statusCode, String reason) {
-    	PathManager.getInstance().unregisterListener(this);
+    	WaypointManager.getInstance().unregisterListener(this);
     	super.onWebSocketClose(statusCode, reason);
     }
 
     @Override
     public void onWebSocketError(Throwable cause) {
-    	PathManager.getInstance().unregisterListener(this);
+    	WaypointManager.getInstance().unregisterListener(this);
     	super.onWebSocketError(cause);
     }
 
@@ -58,24 +58,44 @@ public class WaypointServletSocket extends WebSocketAdapter implements PathChang
     		//it wasn't a basic ping
 
     		ObjectMapper mapper = new ObjectMapper();
+
+    		//the waypoint server will accept a trajectory response or a set of waypoints from another source
+
+
+    		CombinedSrxMotionProfile profile = null;
         	try {
-        		//hopefully it's an SRX Profile, let's deserialize it and try to pass it on
-        		CombinedSrxMotionProfile profile = mapper.readValue(message, CombinedSrxMotionProfile.class);
+        		//check to see if it's an SRX Profile, if it is it and try to pass it on
+        		profile = mapper.readValue(message, CombinedSrxMotionProfile.class);
     			TrajectoryManager.getInstance().setLatestProfile(profile);
         	} catch (JsonParseException e) {
     			logger.error("Unable to Parse Json");
     		} catch (JsonMappingException e) {
-    			logger.error("Unable to Map Json");
+    			logger.debug("The object is not a CombinedSrxMotionProfile");
     		} catch (IOException e) {
     			logger.error("Unable to Write Object");
     		}
+
+        	WaypointList waypoints = null;
+        	try {
+        		//check to see if it's a Waypoint List, if it is it and try to pass it on
+        		waypoints = mapper.readValue(message, WaypointList.class);
+        		WaypointManager.getInstance().setWaypoints(waypoints);
+        	} catch (JsonParseException e) {
+    			logger.error("Unable to Parse Json");
+    		} catch (JsonMappingException e) {
+    			logger.debug("The object is not a WaypointList");
+    		} catch (IOException e) {
+    			logger.error("Unable to Write Object");
+    		}
+
+
     	}
 
 
     }
 
     @Override
-    public void onPathChange(BobPath path) {
+    public void onWaypointChange(WaypointList path) {
     	ObjectMapper mapper = new ObjectMapper();
 		try {
 			String pathJson = mapper.writeValueAsString(path);
