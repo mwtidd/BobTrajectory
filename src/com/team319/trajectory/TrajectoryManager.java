@@ -1,5 +1,9 @@
 package com.team319.trajectory;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.EventListener;
 import java.util.List;
@@ -66,7 +70,7 @@ public class TrajectoryManager {
 		return latestProfile;
 	}
 
-	private void generateTrajectory(){
+	public void generateTrajectory(){
 		long startTime = System.currentTimeMillis();
 
 		WaypointSequence sequence = WaypointManager.getInstance().getWaypointList().toWaypointSequence();
@@ -88,6 +92,26 @@ public class TrajectoryManager {
 		logger.info("Total Gen Took " + (System.currentTimeMillis() - startTime) + "ms");
 
 		//sendTrajectory();
+	}
+
+	private static boolean writeFile(String filePath, String data) {
+		try {
+			File file = new File(filePath);
+
+			// if file doesnt exists, then create it
+			if (!file.exists()) {
+				file.createNewFile();
+			}
+
+			FileWriter fw = new FileWriter(file.getAbsoluteFile());
+			BufferedWriter bw = new BufferedWriter(fw);
+			bw.write(data);
+			bw.close();
+		} catch (IOException e) {
+			return false;
+		}
+
+		return true;
 	}
 
 }
