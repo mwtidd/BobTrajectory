@@ -11,6 +11,8 @@ import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.team319.trajectory.TrajectoryManager;
+
 /**
  * This is meant to run locally on the robot
  *
@@ -63,12 +65,13 @@ public class TrajectoryClient {
 
 			        }
 			    	try {
-						Thread.sleep(100);
+						Thread.sleep(250);
 					} catch (InterruptedException e) {
 						logger.error("An error occured with the thread sleep.");
 						return;
 					}
 		        }
+
 			}
 		}).start();
 

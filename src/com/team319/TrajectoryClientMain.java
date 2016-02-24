@@ -6,7 +6,13 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.team319.trajectory.CombinedSrxMotionProfile;
+import com.team319.trajectory.ITrajectoryChangeListener;
+import com.team319.trajectory.TrajectoryManager;
 import com.team319.waypoint.Waypoint;
+import com.team319.waypoint.WaypointList;
 import com.team319.waypoint.WaypointManager;
 import com.team319.web.trajectory.client.TrajectoryClient;
 
@@ -18,7 +24,7 @@ import com.team319.web.trajectory.client.TrajectoryClient;
  * @author mwtidd
  *
  */
-public class TrajectoryClientMain {
+public class TrajectoryClientMain{
 
 	private static Logger logger = LoggerFactory.getLogger(TrajectoryClientMain.class);
 
@@ -29,13 +35,6 @@ public class TrajectoryClientMain {
 		try {
 			TrajectoryClient.start("localhost");
 
-			Thread.sleep(2000);
-
-			List<Waypoint> waypoints = new ArrayList<Waypoint>();
-			waypoints.add(new Waypoint(0,0,0));
-			waypoints.add(new Waypoint(15,0,0));
-
-			WaypointManager.getInstance().setWaypoints(waypoints);
 		} catch (Exception e) {
 			logger.error("Error Starting Trajectory Client");
 		}

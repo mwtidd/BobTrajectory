@@ -139,6 +139,9 @@ public class SRXTranslator {
 			// create an array of points for the SRX
 			double[][] points = new double[traj.getNumSegments()][3];
 
+			DecimalFormat df = new DecimalFormat("#.####");
+			df.setRoundingMode(RoundingMode.CEILING);
+
 			// Fill that array
 			for (int i = 0; i < traj.getNumSegments(); i++) {
 

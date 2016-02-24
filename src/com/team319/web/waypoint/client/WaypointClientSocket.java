@@ -23,8 +23,10 @@ import com.team319.waypoint.IWaypointChangeListener;
 import com.team319.waypoint.Waypoint;
 import com.team319.waypoint.WaypointList;
 import com.team319.waypoint.WaypointManager;
+import com.team319.web.trajectory.server.TrajectoryServletSocket;
+import com.team319.web.waypoint.server.WaypointServletSocket;
+import com.team319.config.DriveConfigManager;
 import com.team319.trajectory.CombinedSrxMotionProfile;
-import com.team319.trajectory.DriveConfigManager;
 import com.team319.trajectory.SRXTranslator;
 import com.team319.trajectory.ITrajectoryChangeListener;
 
@@ -38,7 +40,7 @@ import com.team319.trajectory.ITrajectoryChangeListener;
  * @author mwtidd
  *
  */
-public class WaypointClientSocket extends WebSocketAdapter implements ITrajectoryChangeListener{
+public class WaypointClientSocket extends WebSocketAdapter implements IWaypointChangeListener{
 
 	private final double WHEELBASE_WIDTH = 23.25 / 12; //TODO: this should really be configurable
 
@@ -47,18 +49,18 @@ public class WaypointClientSocket extends WebSocketAdapter implements ITrajector
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	public WaypointClientSocket(){
-		TrajectoryManager.getInstance().registerListener(this);
+		WaypointManager.getInstance().registerListener(this);
 	}
 
 	@Override
 	public void onWebSocketClose(int statusCode, String reason) {
-		TrajectoryManager.getInstance().unregisterListener(this);
+		WaypointManager.getInstance().unregisterListener(this);
 		super.onWebSocketClose(statusCode, reason);
 	}
 
 	@Override
 	public void onWebSocketError(Throwable cause) {
-		TrajectoryManager.getInstance().unregisterListener(this);
+		WaypointManager.getInstance().unregisterListener(this);
 		super.onWebSocketError(cause);
 	}
 
@@ -76,6 +78,7 @@ public class WaypointClientSocket extends WebSocketAdapter implements ITrajector
 			}
     	}else {
     		//we received something other than the typical pong
+    		/**
 
     		logger.info("Generating Trajectory...");
 
@@ -102,6 +105,7 @@ public class WaypointClientSocket extends WebSocketAdapter implements ITrajector
 
     			logger.info("Trajectory Sent...");
 
+
     		} catch (JsonParseException e) {
     			logger.error("Unable to Parse Json");
     		} catch (JsonMappingException e) {
@@ -109,6 +113,8 @@ public class WaypointClientSocket extends WebSocketAdapter implements ITrajector
     		} catch (IOException e) {
     			logger.error("Unable to Write Object");
     		}
+
+    		**/
 
     	}
 
@@ -121,34 +127,35 @@ public class WaypointClientSocket extends WebSocketAdapter implements ITrajector
     }
 
     @Override
-	public void onTrajectoryChange(CombinedSrxMotionProfile combined) {
-		ObjectMapper mapper = new ObjectMapper();
+    public void onWebSocketBinary(byte[] imageData, int offset, int len) {
+       //not supported
+    }
 
+    @Override
+    public void onWaypointChange(WaypointList waypointList) {
+    	ObjectMapper mapper = new ObjectMapper();
 		try {
+			String waypointJson = mapper.writeValueAsString(waypointList);
 
-
-			String combinedJson = mapper.writeValueAsString(combined);
-
-			logger.info(combinedJson);
+			logger.info(waypointJson);
 
 			RemoteEndpoint remote = getRemote();
 
 			if(remote != null){
-				remote.sendString(combinedJson);
+				try {
+					remote.sendString(waypointJson);
+				} catch (IOException e) {
+					logger.error("Unable to send json");
+				}
 			}else{
 				logger.error("The client has disconnected");
 			}
-
-		} catch (IOException e) {
-			logger.error("Unable to Write Object");
-		} catch (Exception e){
-			logger.error("Unable to Send Json");
+		} catch (JsonProcessingException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		}
-	}
 
-    @Override
-    public void onWebSocketBinary(byte[] imageData, int offset, int len) {
-       //not supported
+
     }
 
 

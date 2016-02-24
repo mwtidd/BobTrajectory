@@ -29,28 +29,9 @@ public class WaypointClient {
 
 	private static Logger logger = LoggerFactory.getLogger(WaypointClient.class);
 
-	private static int teamNumber = -1;
-	private static String ipAddress = null;
+	public static void start(String ipaddress) throws Exception {
 
-	public static void start() throws Exception {
-
-		if(teamNumber == -1 && ipAddress == null){
-			throw new Exception("Please provide either an ip address or a team number through thier respective setter.");
-		}else if(teamNumber > -1 && ipAddress != null){
-			throw new Exception("Please provide either an ip address or a team number but not both.");
-		}
-
-		String url = "ws://";
-		if(teamNumber > -1){
-			url += "roborio-"+teamNumber+".local";
-		}else if(ipAddress != null){
-			url += ipAddress;
-		}else{
-			logger.error("Entered what should have been an unreachable state.");
-			throw new Exception("Unknown error");
-		}
-
-		url += ":5804/waypoints";
+		String url = "ws://" + ipaddress + ":5803/waypoints";
 
         URI destUri = new URI(url);
 
@@ -100,13 +81,5 @@ public class WaypointClient {
 		}).start();
 
     }
-
-	public static void setIpAddress(String ipAddress) {
-		WaypointClient.ipAddress = ipAddress;
-	}
-
-	public static void setTeamNumber(int teamNumber) {
-		WaypointClient.teamNumber = teamNumber;
-	}
 
 }

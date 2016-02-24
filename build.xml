@@ -46,6 +46,7 @@
 	     debug="true">
 	    	<classpath refid="class.path" />
 	    </javac>
+		<copy file="${src.dir}/log4j.properties" todir="${build.dir}"/>
 	  </target>
 
 

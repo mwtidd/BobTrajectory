@@ -7,6 +7,13 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.team254.lib.trajectory.Path;
+import com.team254.lib.trajectory.PathGenerator;
+import com.team254.lib.trajectory.WaypointSequence;
+import com.team319.config.ConfigManager;
+import com.team319.waypoint.WaypointManager;
+import com.team319.web.trajectory.server.TrajectoryServletSocket;
+
 /**
  * This is used both on the robot and the trajectory sever.
  * On the robot is is used to update a listener (in our case the TowerCamera)
@@ -24,6 +31,8 @@ public class TrajectoryManager {
 	private List<ITrajectoryChangeListener> listeners;
 
 	private CombinedSrxMotionProfile latestProfile;
+
+	private static final String PATH_NAME = "Path";
 
 	private TrajectoryManager(){
 		listeners = new ArrayList<ITrajectoryChangeListener>();
@@ -51,6 +60,34 @@ public class TrajectoryManager {
 		for(ITrajectoryChangeListener listener : listeners){
 			listener.onTrajectoryChange(latestProfile);
 		}
+	}
+
+	public CombinedSrxMotionProfile getLatestProfile() {
+		return latestProfile;
+	}
+
+	private void generateTrajectory(){
+		long startTime = System.currentTimeMillis();
+
+		WaypointSequence sequence = WaypointManager.getInstance().getWaypointList().toWaypointSequence();
+
+		//looks good, let's generate a chezy path and trajectory
+
+		Path path = PathGenerator.makePath(sequence, ConfigManager.getInstance().getConfig().toChezyConfig(), ConfigManager.getInstance().getConfig().getWidth(), PATH_NAME);
+
+		logger.info("Path Gen Took " + (System.currentTimeMillis() - startTime) + "ms");
+
+		SRXTranslator srxt = new SRXTranslator();
+		CombinedSrxMotionProfile combined = srxt.getSrxProfileFromChezyPath(path, 5.875, 1.57);//2.778);
+
+		logger.info("SRXing Took " + (System.currentTimeMillis() - startTime) + "ms");
+
+		//the trajectory looks good, lets pass it back
+		setLatestProfile(combined);
+
+		logger.info("Total Gen Took " + (System.currentTimeMillis() - startTime) + "ms");
+
+		//sendTrajectory();
 	}
 
 }

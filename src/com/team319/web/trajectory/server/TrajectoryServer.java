@@ -9,6 +9,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.team319.TrajectoryServerMain;
+import com.team319.web.config.server.ConfigServlet;
+import com.team319.web.waypoint.client.WaypointClient;
+import com.team319.web.waypoint.server.WaypointServlet;
 
 import java.util.EnumSet;
 
@@ -29,11 +32,7 @@ public class TrajectoryServer {
 
     private static Server server;
 
-    public static void startServer() {
-        if (server != null) {
-        	logger.error("Server has already been started.");
-            return;
-        }
+    public static void startServer() throws Exception{
 
         server = new Server(5803);
         ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
@@ -46,8 +45,14 @@ public class TrajectoryServer {
         cors.setInitParameter(CrossOriginFilter.ALLOWED_METHODS_PARAM, "GET,POST,HEAD");
         cors.setInitParameter(CrossOriginFilter.ALLOWED_HEADERS_PARAM, "X-Requested-With,Content-Type,Accept,Origin");
 
-        ServletHolder commandHolder = new ServletHolder("trajectory", new TrajectoryServlet());
-        context.addServlet(commandHolder, "/trajectory");
+        ServletHolder trajectoryServlet = new ServletHolder("trajectory", new TrajectoryServlet());
+        context.addServlet(trajectoryServlet, "/trajectory");
+
+        ServletHolder waypointServlet = new ServletHolder("waypoints", new WaypointServlet());
+        context.addServlet(waypointServlet, "/waypoints");
+
+        ServletHolder configServlet = new ServletHolder("config", new ConfigServlet());
+        context.addServlet(configServlet, "/config");
 
         try {
 			server.start();

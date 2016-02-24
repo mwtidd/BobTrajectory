@@ -7,6 +7,8 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.team319.web.waypoint.server.WaypointServletSocket;
+
 public class WaypointManager {
 
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -15,11 +17,11 @@ public class WaypointManager {
 
 	private List<IWaypointChangeListener> listeners;
 
-	private List<Waypoint> waypoints;
+	private WaypointList waypointList;
 
 	private WaypointManager(){
 		listeners = new ArrayList<IWaypointChangeListener>();
-		waypoints = new ArrayList<Waypoint>();
+		waypointList = new WaypointList();
 	}
 
 	public static WaypointManager getInstance(){
@@ -37,15 +39,12 @@ public class WaypointManager {
 		this.listeners.remove(listener);
 	}
 
-	public void setWaypoints(List<Waypoint> waypoints){
-		this.waypoints = waypoints;
-		for(IWaypointChangeListener listener : listeners){
-			listener.onWaypointChange(new WaypointList(waypoints));
-		}
+	public WaypointList getWaypointList() {
+		return waypointList;
 	}
 
-	public void setWaypoints(WaypointList waypointList){
-		this.waypoints = waypointList.getWaypoints();
+	public void setWaypointList(WaypointList waypointList) {
+		this.waypointList = waypointList;
 		for(IWaypointChangeListener listener : listeners){
 			listener.onWaypointChange(waypointList);
 		}

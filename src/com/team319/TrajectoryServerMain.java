@@ -1,5 +1,6 @@
 package com.team319;
 
+import org.apache.log4j.PropertyConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,12 +25,7 @@ public class TrajectoryServerMain {
 
 		logger.info("Starting Trajectory Server");
 
-
-
 		try {
-			//WaypointClient.setTeamNumber(319);
-			WaypointClient.setIpAddress("localhost");
-			WaypointClient.start();
 			TrajectoryServer.startServer();
 		} catch (Exception e) {
 			logger.error("Error Starting Trajectory Client");
