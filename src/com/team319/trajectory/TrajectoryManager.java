@@ -1,20 +1,31 @@
 package com.team319.trajectory;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.EventListener;
 import java.util.List;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.team254.lib.trajectory.Path;
 import com.team254.lib.trajectory.PathGenerator;
 import com.team254.lib.trajectory.WaypointSequence;
 import com.team319.config.ConfigManager;
+import com.team319.config.DriveConfig;
+import com.team319.waypoint.Waypoint;
+import com.team319.waypoint.WaypointList;
 import com.team319.waypoint.WaypointManager;
 import com.team319.web.trajectory.server.TrajectoryServletSocket;
 
@@ -71,47 +82,102 @@ public class TrajectoryManager {
 	}
 
 	public void generateTrajectory(){
+
 		long startTime = System.currentTimeMillis();
 
-		WaypointSequence sequence = WaypointManager.getInstance().getWaypointList().toWaypointSequence();
+		WaypointList waypointList = WaypointManager.getInstance().getWaypointList();
+		DriveConfig config = ConfigManager.getInstance().getConfig();
 
-		//looks good, let's generate a chezy path and trajectory
+		TrajectoryBundle bundle = new TrajectoryBundle(config, waypointList);
 
-		Path path = PathGenerator.makePath(sequence, ConfigManager.getInstance().getConfig().toChezyConfig(), ConfigManager.getInstance().getConfig().getWidth(), PATH_NAME);
+		try {
+			if(!waypointList.isCachable() || !TrajectoryHistory.getInstance().hasBundle(new TrajectoryBundle(config, waypointList))){
 
-		logger.info("Path Gen Took " + (System.currentTimeMillis() - startTime) + "ms");
 
-		SRXTranslator srxt = new SRXTranslator();
-		CombinedSrxMotionProfile combined = srxt.getSrxProfileFromChezyPath(path, 5.875, 1.57);//2.778);
 
-		logger.info("SRXing Took " + (System.currentTimeMillis() - startTime) + "ms");
 
-		//the trajectory looks good, lets pass it back
-		setLatestProfile(combined);
+				WaypointSequence sequence = waypointList.toWaypointSequence();
 
-		logger.info("Total Gen Took " + (System.currentTimeMillis() - startTime) + "ms");
+				//looks good, let's generate a chezy path and trajectory
+
+
+
+				Path path = PathGenerator.makePath(sequence, config.toChezyConfig(), config.getWidth(), PATH_NAME);
+
+				logger.info("Path Gen Finished @ " + (System.currentTimeMillis() - startTime) + "ms");
+
+				SRXTranslator srxt = new SRXTranslator();
+				CombinedSrxMotionProfile combined = srxt.getSrxProfileFromChezyPath(path, 5.875, 1.57);//2.778);
+
+				logger.info("SRXing Finished @ " + (System.currentTimeMillis() - startTime) + "ms");
+
+				//the trajectory looks good, lets pass it back
+				setLatestProfile(combined);
+
+
+
+				if(waypointList.isCachable()){
+					String id = writeTrajectory(combined);
+
+					TrajectoryHistory.getInstance().putTrajectory(bundle, id);
+				}
+			}else{
+				String id = TrajectoryHistory.getInstance().getId(bundle);
+				CombinedSrxMotionProfile trajectory = readTrajectory(id);
+				trajectory.toJson();
+			}
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+
+		logger.info("Total Gen Finished @ " + (System.currentTimeMillis() - startTime) + "ms");
 
 		//sendTrajectory();
 	}
 
-	private static boolean writeFile(String filePath, String data) {
-		try {
-			File file = new File(filePath);
+	private String writeTrajectory(CombinedSrxMotionProfile data) throws IOException {
+		UUID id = UUID.randomUUID();
 
-			// if file doesnt exists, then create it
-			if (!file.exists()) {
-				file.createNewFile();
-			}
 
-			FileWriter fw = new FileWriter(file.getAbsoluteFile());
-			BufferedWriter bw = new BufferedWriter(fw);
-			bw.write(data);
-			bw.close();
-		} catch (IOException e) {
-			return false;
+		File file = new File("paths/"+id.toString()+".json");
+
+		// if file doesnt exists, then create it
+		if (!file.exists()) {
+			file.createNewFile();
 		}
 
-		return true;
+		FileWriter fw = new FileWriter(file.getAbsoluteFile());
+		BufferedWriter bw = new BufferedWriter(fw);
+		bw.write(data.toJsonString());
+		bw.close();
+
+		return id.toString();
+	}
+
+	private CombinedSrxMotionProfile readTrajectory(String id) throws FileNotFoundException, IOException, JsonParseException, JsonMappingException{
+		try(BufferedReader br = new BufferedReader(new FileReader("paths/" + id + ".json"))) {
+		    StringBuilder sb = new StringBuilder();
+		    String line = br.readLine();
+
+		    while (line != null) {
+		        sb.append(line);
+		        sb.append(System.lineSeparator());
+		        line = br.readLine();
+		    }
+		    String everything = sb.toString();
+
+    		ObjectMapper mapper = new ObjectMapper();
+
+    		CombinedSrxMotionProfile profile = mapper.readValue(everything, CombinedSrxMotionProfile.class);
+
+    		return profile;
+
+		}
 	}
 
 }

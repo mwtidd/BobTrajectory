@@ -1,9 +1,20 @@
 package com.team319.trajectory;
 
+import java.io.IOException;
+
+import org.eclipse.jetty.websocket.api.RemoteEndpoint;
 import org.json.simple.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 //Combines left and right motion profiles in one object
 public class CombinedSrxMotionProfile {
+
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
 	private SrxMotionProfile leftProfile;
 	private SrxMotionProfile rightProfile;
 
@@ -35,6 +46,13 @@ public class CombinedSrxMotionProfile {
 
 	public SrxMotionProfile getRightProfile() {
 		return rightProfile;
+	}
+
+	public String toJsonString() throws JsonProcessingException{
+		ObjectMapper mapper = new ObjectMapper();
+		String combinedJson = mapper.writeValueAsString(TrajectoryManager.getInstance().getLatestProfile());
+
+		return combinedJson;
 	}
 
 }
