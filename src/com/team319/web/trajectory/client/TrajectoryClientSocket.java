@@ -13,12 +13,14 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.team319.trajectory.Waypoint;
 import com.team319.trajectory.TrajectoryManager;
-import com.team319.trajectory.WaypointList;
+import com.team319.waypoint.IWaypointChangeListener;
+import com.team319.waypoint.Waypoint;
+import com.team319.waypoint.WaypointList;
+import com.team319.waypoint.WaypointManager;
+import com.team319.web.trajectory.server.TrajectoryServletSocket;
 import com.team319.trajectory.CombinedSrxMotionProfile;
-import com.team319.trajectory.IWaypointChangeListener;
-import com.team319.trajectory.WaypointManager;
+import com.team319.trajectory.ITrajectoryChangeListener;
 
 /**
  * This is meant to run locally on the robot
@@ -28,23 +30,23 @@ import com.team319.trajectory.WaypointManager;
  * @author mwtidd
  *
  */
-public class TrajectoryClientSocket extends WebSocketAdapter implements IWaypointChangeListener{
+public class TrajectoryClientSocket extends WebSocketAdapter implements ITrajectoryChangeListener{
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	public TrajectoryClientSocket(){
-		WaypointManager.getInstance().registerListener(this);
+		TrajectoryManager.getInstance().registerListener(this);
 	}
 
 	@Override
 	public void onWebSocketClose(int statusCode, String reason) {
-		WaypointManager.getInstance().unregisterListener(this);
+		TrajectoryManager.getInstance().unregisterListener(this);
 		super.onWebSocketClose(statusCode, reason);
 	}
 
 	@Override
 	public void onWebSocketError(Throwable cause) {
-		WaypointManager.getInstance().unregisterListener(this);
+		TrajectoryManager.getInstance().unregisterListener(this);
 		super.onWebSocketError(cause);
 	}
 
@@ -66,6 +68,7 @@ public class TrajectoryClientSocket extends WebSocketAdapter implements IWaypoin
         	try {
         		//hopefully it's an SRX Profile, let's deserialize it and try to pass it on
         		CombinedSrxMotionProfile profile = mapper.readValue(message, CombinedSrxMotionProfile.class);
+        		logger.info("Got New Profile");
     			TrajectoryManager.getInstance().setLatestProfile(profile);
         	} catch (JsonParseException e) {
     			logger.error("Unable to Parse Json");
@@ -77,11 +80,6 @@ public class TrajectoryClientSocket extends WebSocketAdapter implements IWaypoin
 
     	}
 
-
-
-
-
-
     	//logger.info(message);
     }
 
@@ -91,20 +89,10 @@ public class TrajectoryClientSocket extends WebSocketAdapter implements IWaypoin
     }
 
     @Override
-    public void onWaypointChange(WaypointList path) {
-    	ObjectMapper mapper = new ObjectMapper();
-		try {
-			String pathJson = mapper.writeValueAsString(path);
-			RemoteEndpoint endpoint = getRemote();
-			if(endpoint != null){
-				getRemote().sendString(pathJson);
-			}
-		} catch (JsonProcessingException e) {
-			logger.error("Unable to parse path json.");
-		} catch (IOException e) {
-			logger.error("Unable to send json.");
-		}
-
+    public void onTrajectoryChange(CombinedSrxMotionProfile latestProfile) {
+    	// TODO Auto-generated method stub
+    	//TrajectoryManager.getInstance().setLatestProfile(latestProfile);
+    	latestProfile.toString();
     }
 
 }

@@ -4,6 +4,7 @@ package com.team319.web.waypoint.server;
 import java.io.IOException;
 
 import org.eclipse.jetty.websocket.api.RemoteEndpoint;
+import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.WebSocketAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,21 +17,29 @@ import com.team254.lib.trajectory.Path;
 import com.team254.lib.trajectory.PathGenerator;
 import com.team254.lib.trajectory.TrajectoryGenerator;
 import com.team254.lib.trajectory.WaypointSequence;
-import com.team319.trajectory.WaypointList;
+import com.team319.config.ConfigManager;
 import com.team319.trajectory.CombinedSrxMotionProfile;
-import com.team319.trajectory.IWaypointChangeListener;
-import com.team319.trajectory.WaypointManager;
 import com.team319.trajectory.SRXTranslator;
 import com.team319.trajectory.ITrajectoryChangeListener;
 import com.team319.trajectory.TrajectoryManager;
+import com.team319.waypoint.IWaypointChangeListener;
+import com.team319.waypoint.WaypointList;
+import com.team319.waypoint.WaypointManager;
 
 public class WaypointServletSocket extends WebSocketAdapter implements IWaypointChangeListener{
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
+	private static final String PATH_NAME = "Path";
 
     public WaypointServletSocket() {
     	WaypointManager.getInstance().registerListener(this);
+    }
+
+    @Override
+    public void onWebSocketConnect(Session sess) {
+    	super.onWebSocketConnect(sess);
+    	logger.info("Connected");
     }
 
     @Override
@@ -56,6 +65,47 @@ public class WaypointServletSocket extends WebSocketAdapter implements IWaypoint
 			}
     	}else{
     		//it wasn't a basic ping
+    		ObjectMapper mapper = new ObjectMapper();
+
+    		WaypointList waypoints = null;
+        	try {
+        		//check to see if it's a Waypoint List, if it is create a trajectory
+        		waypoints = mapper.readValue(message, WaypointList.class);
+
+        		long startTime = System.currentTimeMillis();
+
+        		WaypointSequence sequence = waypoints.toWaypointSequence();//waypoints.toWaypointSequence();
+
+        		//looks good, let's generate a chezy path and trajectory
+
+        		Path path = PathGenerator.makePath(sequence, ConfigManager.getInstance().getConfig().toChezyConfig(), ConfigManager.getInstance().getConfig().getWidth(), PATH_NAME);
+
+        		logger.info("Path Gen Took " + (System.currentTimeMillis() - startTime) + "ms");
+
+        		SRXTranslator srxt = new SRXTranslator();
+        		CombinedSrxMotionProfile combined = srxt.getSrxProfileFromChezyPath(path, 5.875, 1.57);//2.778);
+
+        		logger.info("SRXing Took " + (System.currentTimeMillis() - startTime) + "ms");
+
+        		//the trajectory looks good, lets pass it back
+        		TrajectoryManager.getInstance().setLatestProfile(combined);
+
+        		logger.info("Total Gen Took " + (System.currentTimeMillis() - startTime) + "ms");
+
+        		//sendTrajectory();
+
+
+
+        		WaypointManager.getInstance().setWaypointList(waypoints);
+        	} catch (JsonParseException e) {
+    			logger.error("Unable to Parse Json");
+    		} catch (JsonMappingException e) {
+    			logger.error("The object is not a WaypointList");
+    		} catch (IOException e) {
+    			logger.error("Unable to Write Object");
+    		}
+
+    		/**
 
     		ObjectMapper mapper = new ObjectMapper();
 
@@ -88,7 +138,7 @@ public class WaypointServletSocket extends WebSocketAdapter implements IWaypoint
     			logger.error("Unable to Write Object");
     		}
 
-
+			**/
     	}
 
 
