@@ -72,31 +72,10 @@ public class WaypointServletSocket extends WebSocketAdapter implements IWaypoint
         		//check to see if it's a Waypoint List, if it is create a trajectory
         		waypoints = mapper.readValue(message, WaypointList.class);
 
-        		long startTime = System.currentTimeMillis();
-
-        		WaypointSequence sequence = waypoints.toWaypointSequence();//waypoints.toWaypointSequence();
-
-        		//looks good, let's generate a chezy path and trajectory
-
-        		Path path = PathGenerator.makePath(sequence, ConfigManager.getInstance().getConfig().toChezyConfig(), ConfigManager.getInstance().getConfig().getWidth(), PATH_NAME);
-
-        		logger.info("Path Gen Took " + (System.currentTimeMillis() - startTime) + "ms");
-
-        		SRXTranslator srxt = new SRXTranslator();
-        		CombinedSrxMotionProfile combined = srxt.getSrxProfileFromChezyPath(path, 5.875, 1.57);//2.778);
-
-        		logger.info("SRXing Took " + (System.currentTimeMillis() - startTime) + "ms");
-
-        		//the trajectory looks good, lets pass it back
-        		TrajectoryManager.getInstance().setLatestProfile(combined);
-
-        		logger.info("Total Gen Took " + (System.currentTimeMillis() - startTime) + "ms");
-
-        		//sendTrajectory();
-
-
-
         		WaypointManager.getInstance().setWaypointList(waypoints);
+
+        		TrajectoryManager.getInstance().generateTrajectory();
+
         	} catch (JsonParseException e) {
     			logger.error("Unable to Parse Json");
     		} catch (JsonMappingException e) {

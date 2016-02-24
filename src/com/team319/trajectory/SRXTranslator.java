@@ -146,10 +146,10 @@ public class SRXTranslator {
 			for (int i = 0; i < traj.getNumSegments(); i++) {
 
 				// translate from feet to rotations
-				points[i][0] = convertFeetToEncoderRotations(traj.getSegment(i).pos, wheelDiameterInches, gearReduction);
+				points[i][0] = Double.parseDouble(df.format(convertFeetToEncoderRotations(traj.getSegment(i).pos, wheelDiameterInches, gearReduction)));
 
 				// translate from fps to rpm
-				points[i][1] = convertFpsToEncoderRpm(traj.getSegment(i).vel, wheelDiameterInches, gearReduction);
+				points[i][1] = Double.parseDouble(df.format(convertFpsToEncoderRpm(traj.getSegment(i).vel, wheelDiameterInches, gearReduction)));
 
 				// translate from seconds to milliseconds
 				points[i][2] = traj.getSegment(i).dt * 1000;
