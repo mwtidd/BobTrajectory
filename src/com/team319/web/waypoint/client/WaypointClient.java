@@ -29,11 +29,9 @@ public class WaypointClient {
 
 	private static Logger logger = LoggerFactory.getLogger(WaypointClient.class);
 
-	public static void start(String ipaddress) throws Exception {
+	public static void start(String ipAddress) throws Exception {
 
-		String url = "ws://" + ipaddress + ":5803/waypoints";
-
-        URI destUri = new URI(url);
+		URI destUri = new URI("ws://"+ipAddress+":5803/waypoints");
 
         WebSocketClient client = new WebSocketClient();
 

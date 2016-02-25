@@ -69,54 +69,14 @@ public class TrajectoryServletSocket extends WebSocketAdapter implements ITrajec
     	if(message.equalsIgnoreCase("ping")){
     		//we received a ping from the robot, we should pong back
     		try {
+    			Thread.sleep(200);
 				getRemote().sendString("pong");
 			} catch (IOException e) {
 				logger.error("Unable to send pong");
+			} catch (InterruptedException e) {
+				logger.error("Unable to sleep");
 			}
-    	}else{
-    		//it wasn't a basic ping
-
-    		//no accepting messages anymore, send it to the waypoint socket
-
-    		/**
-
-        	logger.info("Generating Trajectory...");
-
-        	ObjectMapper mapper = new ObjectMapper();
-
-        	try {
-
-        		logger.info("Received Message: " + message);
-
-        		//lets try to build a path out of the message
-    			WaypointList waypoints = mapper.readValue(message, WaypointList.class);
-    			WaypointSequence sequence = waypoints.toWaypointSequence();
-
-    			//looks good, let's generate a chezy path and trajectory
-
-    			Path path = PathGenerator.makePath(sequence, config, kWheelbaseWidth, PATH_NAME);
-
-
-    			SRXTranslator srxt = new SRXTranslator();
-    			CombinedSrxMotionProfile combined = srxt.getSrxProfileFromChezyPath(path, 5.875, 1.57);//2.778);
-
-    			//the trajectory looks good, lets pass it back
-    			TrajectoryManager.getInstance().setLatestProfile(combined);
-
-    			logger.info("Trajectory Sent...");
-
-    		} catch (JsonParseException e) {
-    			logger.error("Unable to Parse Json");
-    		} catch (JsonMappingException e) {
-    			logger.error("Unable to Map Json");
-    		} catch (IOException e) {
-    			logger.error("Unable to Write Object");
-    		}
     	}
-
-    	**/
-    	}
-
 
     }
 

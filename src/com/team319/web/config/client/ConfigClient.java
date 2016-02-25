@@ -29,30 +29,10 @@ public class ConfigClient {
 
 	private static Logger logger = LoggerFactory.getLogger(ConfigClient.class);
 
-	private static int teamNumber = -1;
-	private static String ipAddress = null;
 
-	public static void start() throws Exception {
+	public static void start(String ipAddress) throws Exception {
 
-		if(teamNumber == -1 && ipAddress == null){
-			throw new Exception("Please provide either an ip address or a team number through thier respective setter.");
-		}else if(teamNumber > -1 && ipAddress != null){
-			throw new Exception("Please provide either an ip address or a team number but not both.");
-		}
-
-		String url = "ws://";
-		if(teamNumber > -1){
-			url += "roborio-"+teamNumber+".local";
-		}else if(ipAddress != null){
-			url += ipAddress;
-		}else{
-			logger.error("Entered what should have been an unreachable state.");
-			throw new Exception("Unknown error");
-		}
-
-		url += ":5804/waypoints";
-
-        URI destUri = new URI(url);
+		URI destUri = new URI("ws://"+ipAddress+":5803/config");
 
         WebSocketClient client = new WebSocketClient();
 
@@ -72,7 +52,7 @@ public class ConfigClient {
 			            //wait for the connection to be established
 			            Session session = futureSession.get();
 
-			            //start playing ping pong with the robot
+			            //start playing ping pong with the client
 			            session.getRemote().sendString("ping");
 
 			            //the socket connection has been established, our work is done here
@@ -100,13 +80,5 @@ public class ConfigClient {
 		}).start();
 
     }
-
-	public static void setIpAddress(String ipAddress) {
-		ConfigClient.ipAddress = ipAddress;
-	}
-
-	public static void setTeamNumber(int teamNumber) {
-		ConfigClient.teamNumber = teamNumber;
-	}
 
 }
