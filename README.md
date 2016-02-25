@@ -58,6 +58,6 @@ Create a command group and add two sequential commands
 ### Command Examples
 
 A generic command has been created. It can be refenced simply by calling:
-`new BuildAndDriveTrajectory(driveTrain, leftTalon, rightTalon, waypointList);
+`new BuildAndDriveTrajectory(driveTrain, leftTalon, rightTalon, waypointList);`
 
 It hadles the generation of a trajectory based on the provided waypoints, and the execution of that trajectory on the drive train via the respective CAN Talons.
