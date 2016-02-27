@@ -33,13 +33,15 @@ public class WaypointServletSocket extends WebSocketAdapter implements IWaypoint
 	private static final String PATH_NAME = "Path";
 
     public WaypointServletSocket() {
-    	WaypointManager.getInstance().registerListener(this);
+
     }
 
     @Override
     public void onWebSocketConnect(Session sess) {
     	super.onWebSocketConnect(sess);
+    	WaypointManager.getInstance().registerListener(this);
     	logger.info("Connected");
+    	//TODO: send current waypoint list
     }
 
     @Override
@@ -57,11 +59,14 @@ public class WaypointServletSocket extends WebSocketAdapter implements IWaypoint
     public void onWebSocketText(String message) {
 
     	if(message.equalsIgnoreCase("ping")){
-    		//we received a ping from the robot, we should pong back
+    		//we received a ping from a client, we should pong back
     		try {
+    			Thread.sleep(100);
 				getRemote().sendString("pong");
 			} catch (IOException e) {
 				logger.error("Unable to send pong");
+			} catch (InterruptedException e) {
+				logger.error("Unable to sleep");
 			}
     	}else{
     		//it wasn't a basic ping

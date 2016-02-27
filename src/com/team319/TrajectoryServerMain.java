@@ -4,6 +4,7 @@ import org.apache.log4j.PropertyConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.team319.trajectory.TrajectoryManager;
 import com.team319.web.trajectory.server.TrajectoryServer;
 import com.team319.web.waypoint.client.WaypointClient;
 

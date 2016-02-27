@@ -41,26 +41,32 @@ public class ConfigServletSocket extends WebSocketAdapter implements IConfigChan
     public void onWebSocketConnect(Session sess) {
     	super.onWebSocketConnect(sess);
     	logger.info("Connected");
+    	ConfigManager.getInstance().registerListener(this);
     }
 
     @Override
     public void onWebSocketClose(int statusCode, String reason) {
     	super.onWebSocketClose(statusCode, reason);
+    	ConfigManager.getInstance().unregisterListener(this);
     }
 
     @Override
     public void onWebSocketError(Throwable cause) {
     	super.onWebSocketError(cause);
+    	ConfigManager.getInstance().unregisterListener(this);
     }
 
     public void onWebSocketText(String message) {
 
     	if(message.equalsIgnoreCase("ping")){
-    		//we received a ping from the robot, we should pong back
+    		//we received a ping from a client, we should pong back
     		try {
+    			Thread.sleep(100);
 				getRemote().sendString("pong");
 			} catch (IOException e) {
 				logger.error("Unable to send pong");
+			} catch (InterruptedException e) {
+				logger.error("Unable to sleep");
 			}
     	}else{
     		//it wasn't a basic ping
@@ -71,7 +77,7 @@ public class ConfigServletSocket extends WebSocketAdapter implements IConfigChan
         		//check to see if it's a Drive Config, if it is it and try to pass it on
     			config = mapper.readValue(message, DriveConfig.class);
 
-    			//let any other config interfaces know the config has changed
+    			//let any other listeners know the config has changed
     			ConfigManager.getInstance().setConfig(config, this);
 
     			//generate a trajectory with the new config

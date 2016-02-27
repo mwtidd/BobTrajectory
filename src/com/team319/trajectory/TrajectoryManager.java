@@ -123,8 +123,8 @@ public class TrajectoryManager {
 				}
 			}else{
 				String id = TrajectoryHistory.getInstance().getId(bundle);
-				CombinedSrxMotionProfile trajectory = readTrajectory(id);
-				trajectory.toJson();
+				CombinedSrxMotionProfile combined = readTrajectory(id);
+				setLatestProfile(combined);
 			}
 		} catch (JsonProcessingException e) {
 			// TODO Auto-generated catch block
@@ -159,6 +159,8 @@ public class TrajectoryManager {
 		return id.toString();
 	}
 
+
+
 	private CombinedSrxMotionProfile readTrajectory(String id) throws FileNotFoundException, IOException, JsonParseException, JsonMappingException{
 		try(BufferedReader br = new BufferedReader(new FileReader("paths/" + id + ".json"))) {
 		    StringBuilder sb = new StringBuilder();
@@ -178,6 +180,15 @@ public class TrajectoryManager {
     		return profile;
 
 		}
+	}
+
+	public void loadTrajectories() throws JsonParseException, JsonMappingException, FileNotFoundException, IOException{
+		logger.info("Loading Trajectories");
+
+		//load trajectory map
+		TrajectoryHistory.getInstance().loadHistory();
+
+		//load trajectories
 	}
 
 }

@@ -42,10 +42,6 @@ import com.team319.trajectory.ITrajectoryChangeListener;
  */
 public class WaypointClientSocket extends WebSocketAdapter implements IWaypointChangeListener{
 
-	private final double WHEELBASE_WIDTH = 23.25 / 12; //TODO: this should really be configurable
-
-	private static final String PATH_NAME = "Path";
-
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	public WaypointClientSocket(){
@@ -67,7 +63,7 @@ public class WaypointClientSocket extends WebSocketAdapter implements IWaypointC
     public void onWebSocketText(String message) {
 
     	if(message.equalsIgnoreCase("pong")){
-    		//we received a pong back from the robot, we should ping back
+    		//we received a pong back from the server, we should ping back
     		try {
 				getRemote().sendString("ping");
 				Thread.sleep(100);
