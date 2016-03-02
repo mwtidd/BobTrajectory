@@ -10,6 +10,10 @@ public class DriveConfig {
 	private double vel = 4.0;
 	private double width = 23.25 / 12;
 
+	private CanTalonConfig leftConfig = new CanTalonConfig();
+
+	private CanTalonConfig rightConfig = new CanTalonConfig();
+
 	public DriveConfig(){
 
 	}
@@ -68,5 +72,23 @@ public class DriveConfig {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	public CanTalonConfig getLeftConfig() {
+		return leftConfig;
+	}
+
+	public void setLeftConfig(CanTalonConfig leftConfig) {
+		this.leftConfig = leftConfig;
+	}
+
+	public CanTalonConfig getRightConfig() {
+		return rightConfig;
+	}
+
+	public void setRightConfig(CanTalonConfig rightConfig) {
+		this.rightConfig = rightConfig;
+	}
+
+
 
 }

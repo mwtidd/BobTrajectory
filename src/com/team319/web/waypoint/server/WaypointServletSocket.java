@@ -33,13 +33,15 @@ public class WaypointServletSocket extends WebSocketAdapter implements IWaypoint
 	private static final String PATH_NAME = "Path";
 
     public WaypointServletSocket() {
-    	WaypointManager.getInstance().registerListener(this);
+
     }
 
     @Override
     public void onWebSocketConnect(Session sess) {
     	super.onWebSocketConnect(sess);
+    	WaypointManager.getInstance().registerListener(this);
     	logger.info("Connected");
+    	//TODO: send current waypoint list
     }
 
     @Override
@@ -57,11 +59,14 @@ public class WaypointServletSocket extends WebSocketAdapter implements IWaypoint
     public void onWebSocketText(String message) {
 
     	if(message.equalsIgnoreCase("ping")){
-    		//we received a ping from the robot, we should pong back
+    		//we received a ping from a client, we should pong back
     		try {
+    			Thread.sleep(100);
 				getRemote().sendString("pong");
 			} catch (IOException e) {
 				logger.error("Unable to send pong");
+			} catch (InterruptedException e) {
+				logger.error("Unable to sleep");
 			}
     	}else{
     		//it wasn't a basic ping
@@ -72,8 +77,10 @@ public class WaypointServletSocket extends WebSocketAdapter implements IWaypoint
         		//check to see if it's a Waypoint List, if it is create a trajectory
         		waypoints = mapper.readValue(message, WaypointList.class);
 
+        		//let any listeners know the waypoints have changes
         		WaypointManager.getInstance().setWaypointList(waypoints);
 
+        		//generate a trajectory
         		TrajectoryManager.getInstance().generateTrajectory();
 
         	} catch (JsonParseException e) {
@@ -84,56 +91,22 @@ public class WaypointServletSocket extends WebSocketAdapter implements IWaypoint
     			logger.error("Unable to Write Object");
     		}
 
-    		/**
-
-    		ObjectMapper mapper = new ObjectMapper();
-
-    		//the waypoint server will accept a trajectory response or a set of waypoints from another source
-
-
-    		CombinedSrxMotionProfile profile = null;
-        	try {
-        		//check to see if it's an SRX Profile, if it is it and try to pass it on
-        		profile = mapper.readValue(message, CombinedSrxMotionProfile.class);
-    			TrajectoryManager.getInstance().setLatestProfile(profile);
-        	} catch (JsonParseException e) {
-    			logger.error("Unable to Parse Json");
-    		} catch (JsonMappingException e) {
-    			logger.debug("The object is not a CombinedSrxMotionProfile");
-    		} catch (IOException e) {
-    			logger.error("Unable to Write Object");
-    		}
-
-        	WaypointList waypoints = null;
-        	try {
-        		//check to see if it's a Waypoint List, if it is it and try to pass it on
-        		waypoints = mapper.readValue(message, WaypointList.class);
-        		WaypointManager.getInstance().setWaypoints(waypoints);
-        	} catch (JsonParseException e) {
-    			logger.error("Unable to Parse Json");
-    		} catch (JsonMappingException e) {
-    			logger.debug("The object is not a WaypointList");
-    		} catch (IOException e) {
-    			logger.error("Unable to Write Object");
-    		}
-
-			**/
     	}
 
 
     }
 
     @Override
-    public void onWaypointChange(WaypointList path) {
+    public void onWaypointChange(WaypointList waypointList) {
     	ObjectMapper mapper = new ObjectMapper();
 		try {
-			String pathJson = mapper.writeValueAsString(path);
+			String waypointListJson = mapper.writeValueAsString(waypointList);
 			RemoteEndpoint endpoint = getRemote();
 			if(endpoint != null){
-				getRemote().sendString(pathJson);
+				getRemote().sendString(waypointListJson);
 			}
 		} catch (JsonProcessingException e) {
-			logger.error("Unable to parse path json.");
+			logger.error("Unable to parse waypoint list json.");
 		} catch (IOException e) {
 			logger.error("Unable to send json.");
 		}

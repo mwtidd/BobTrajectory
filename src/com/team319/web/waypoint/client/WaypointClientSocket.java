@@ -42,10 +42,6 @@ import com.team319.trajectory.ITrajectoryChangeListener;
  */
 public class WaypointClientSocket extends WebSocketAdapter implements IWaypointChangeListener{
 
-	private final double WHEELBASE_WIDTH = 23.25 / 12; //TODO: this should really be configurable
-
-	private static final String PATH_NAME = "Path";
-
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	public WaypointClientSocket(){
@@ -67,7 +63,7 @@ public class WaypointClientSocket extends WebSocketAdapter implements IWaypointC
     public void onWebSocketText(String message) {
 
     	if(message.equalsIgnoreCase("pong")){
-    		//we received a pong back from the robot, we should ping back
+    		//we received a pong back from the server, we should ping back
     		try {
 				getRemote().sendString("ping");
 				Thread.sleep(100);
@@ -78,35 +74,14 @@ public class WaypointClientSocket extends WebSocketAdapter implements IWaypointC
 			}
     	}else {
     		//we received something other than the typical pong
-    		/**
 
-    		logger.info("Generating Trajectory...");
-
-        	ObjectMapper mapper = new ObjectMapper();
-
+    		ObjectMapper mapper = new ObjectMapper();
         	try {
-
-        		logger.info("Received Message: " + message);
-
         		//lets try to build a path out of the message
     			WaypointList waypoints = mapper.readValue(message, WaypointList.class);
-    			WaypointSequence sequence = waypoints.toWaypointSequence();
-
-    			//looks good, let's generate a chezy path and trajectory
-
-    			Path path = PathGenerator.makePath(sequence, DriveConfigManager.getInstance().getDriveConfig(), WHEELBASE_WIDTH, PATH_NAME);
-
-
-    			SRXTranslator srxt = new SRXTranslator();
-    			CombinedSrxMotionProfile combined = srxt.getSrxProfileFromChezyPath(path, 5.875, 1.57);//2.778);
-
-    			//the trajectory looks good, lets pass it back
-    			TrajectoryManager.getInstance().setLatestProfile(combined);
-
-    			logger.info("Trajectory Sent...");
-
-
-    		} catch (JsonParseException e) {
+        		logger.info("Got New Waypoints");
+    			//WaypointManager.getInstance().setWaypointList(waypoints);
+        	} catch (JsonParseException e) {
     			logger.error("Unable to Parse Json");
     		} catch (JsonMappingException e) {
     			logger.error("Unable to Map Json");
@@ -114,7 +89,6 @@ public class WaypointClientSocket extends WebSocketAdapter implements IWaypointC
     			logger.error("Unable to Write Object");
     		}
 
-    		**/
 
     	}
 

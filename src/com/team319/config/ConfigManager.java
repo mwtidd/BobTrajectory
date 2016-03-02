@@ -48,7 +48,7 @@ public class ConfigManager {
 	public void setConfig(DriveConfig config, ConfigServletSocket source) {
 		this.config = config;
 		for(IConfigChangeListener listener : listeners){
-			listener.onConfigChange(config, source);
+			listener.onConfigChange(config);
 		}
 	}
 

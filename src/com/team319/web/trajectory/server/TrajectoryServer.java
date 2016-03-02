@@ -9,7 +9,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.team319.TrajectoryServerMain;
+import com.team319.trajectory.TrajectoryManager;
 import com.team319.web.config.server.ConfigServlet;
+import com.team319.web.path.server.PathServlet;
 import com.team319.web.waypoint.client.WaypointClient;
 import com.team319.web.waypoint.server.WaypointServlet;
 
@@ -51,10 +53,14 @@ public class TrajectoryServer {
         ServletHolder waypointServlet = new ServletHolder("waypoints", new WaypointServlet());
         context.addServlet(waypointServlet, "/waypoints");
 
+        ServletHolder pathServlet = new ServletHolder("path", new PathServlet());
+        context.addServlet(pathServlet, "/path");
+
         ServletHolder configServlet = new ServletHolder("config", new ConfigServlet());
         context.addServlet(configServlet, "/config");
 
         try {
+        	TrajectoryManager.getInstance().loadTrajectories();
 			server.start();
 			server.join();
 		} catch (Exception e) {
