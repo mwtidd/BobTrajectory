@@ -22,8 +22,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.team254.lib.trajectory.Path;
 import com.team254.lib.trajectory.PathGenerator;
 import com.team254.lib.trajectory.WaypointSequence;
+import com.team319.HistoryBundle;
 import com.team319.config.ConfigManager;
 import com.team319.config.DriveConfig;
+import com.team319.path.PathHistory;
+import com.team319.path.PathManager;
 import com.team319.waypoint.Waypoint;
 import com.team319.waypoint.WaypointList;
 import com.team319.waypoint.WaypointManager;
@@ -88,21 +91,16 @@ public class TrajectoryManager {
 		WaypointList waypointList = WaypointManager.getInstance().getWaypointList();
 		DriveConfig config = ConfigManager.getInstance().getConfig();
 
-		TrajectoryBundle bundle = new TrajectoryBundle(config, waypointList);
+		HistoryBundle bundle = new HistoryBundle(config, waypointList);
 
 		try {
-			if(!waypointList.isCachable() || !TrajectoryHistory.getInstance().hasBundle(new TrajectoryBundle(config, waypointList))){
+			if(!waypointList.isCachable() || !TrajectoryHistory.getInstance().hasBundle(new HistoryBundle(config, waypointList))){
 
 
-
-
-				WaypointSequence sequence = waypointList.toWaypointSequence();
 
 				//looks good, let's generate a chezy path and trajectory
 
-
-
-				Path path = PathGenerator.makePath(sequence, config.toChezyConfig(), config.getWidth(), PATH_NAME);
+				Path path = PathManager.getInstance().makeChezyPath(bundle);
 
 				logger.info("Path Gen Finished @ " + (System.currentTimeMillis() - startTime) + "ms");
 
@@ -122,6 +120,9 @@ public class TrajectoryManager {
 					TrajectoryHistory.getInstance().putTrajectory(bundle, id);
 				}
 			}else{
+
+				PathManager.getInstance().getStoredPath(bundle);
+
 				String id = TrajectoryHistory.getInstance().getId(bundle);
 				CombinedSrxMotionProfile combined = readTrajectory(id);
 				setLatestProfile(combined);
@@ -144,7 +145,7 @@ public class TrajectoryManager {
 		UUID id = UUID.randomUUID();
 
 
-		File file = new File("paths/"+id.toString()+".json");
+		File file = new File("trajectories/"+id.toString()+".json");
 
 		// if file doesnt exists, then create it
 		if (!file.exists()) {
@@ -162,7 +163,7 @@ public class TrajectoryManager {
 
 
 	private CombinedSrxMotionProfile readTrajectory(String id) throws FileNotFoundException, IOException, JsonParseException, JsonMappingException{
-		try(BufferedReader br = new BufferedReader(new FileReader("paths/" + id + ".json"))) {
+		try(BufferedReader br = new BufferedReader(new FileReader("trajectories/" + id + ".json"))) {
 		    StringBuilder sb = new StringBuilder();
 		    String line = br.readLine();
 
@@ -187,7 +188,7 @@ public class TrajectoryManager {
 
 		//load trajectory map
 		TrajectoryHistory.getInstance().loadHistory();
-
+		PathHistory.getInstance().loadHistory();
 		//load trajectories
 	}
 

@@ -50,7 +50,7 @@ public class CombinedSrxMotionProfile {
 
 	public String toJsonString() throws JsonProcessingException{
 		ObjectMapper mapper = new ObjectMapper();
-		String combinedJson = mapper.writeValueAsString(TrajectoryManager.getInstance().getLatestProfile());
+		String combinedJson = mapper.writeValueAsString(this);
 
 		return combinedJson;
 	}
