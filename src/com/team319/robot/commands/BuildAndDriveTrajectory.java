@@ -12,6 +12,9 @@ public class BuildAndDriveTrajectory extends CommandGroup{
 
 	/**
 	 *
+	 * A Command Group that handles both the building and the execution of a trajectory
+	 * based on a set of waypoints.
+	 *
 	 * @param driveTrain	The drive train subsystem that is be required by the commands
 	 * @param leftTalon		The CAN Talon on the left side of the drive train
 	 * @param rightTalon	The CAN Talon on the right side of the drive train

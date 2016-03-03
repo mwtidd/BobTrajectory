@@ -12,12 +12,26 @@ import com.team319.waypoint.Waypoint;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
+/**
+ * Build Trajectory
+ *
+ * Responsible for firing a request with a set of Waypoints
+ * to the TrajectoryServer and waiting for a response back.
+ *
+ * @author mwtidd
+ *
+ */
 public class BuildTrajectory extends Command implements ITrajectoryChangeListener{
 
 	private boolean waitingForTrajectory = true;
 
 	List<Waypoint> waypoints;
 
+	/**
+	 *
+	 * @param drivetrain The DriveTrain Subsystem
+	 * @param waypoints The set of Waypoints that we want to generate a trajectory for
+	 */
 	public BuildTrajectory(Subsystem drivetrain, List<Waypoint> waypoints) {
 		requires(drivetrain);
 		this.waypoints = waypoints;

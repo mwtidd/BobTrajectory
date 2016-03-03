@@ -1,13 +1,28 @@
 package com.team319.robot.commands;
 
-import com.team319.robot.motion.OnTheFlyMotionProfile;
+import com.team319.robot.motion.OtfMotionProfile;
+import com.team319.trajectory.TrajectoryManager;
+import com.team319.trajectory.progress.CombinedTrajectoryProgress;
+import com.team319.trajectory.progress.TrajectoryProgress;
+import com.team319.trajectory.progress.TrajectoryProgressManager;
 
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.TalonSRX;
+import edu.wpi.first.wpilibj.CANTalon.MotionProfileStatus;
 import edu.wpi.first.wpilibj.CANTalon.TalonControlMode;
+import edu.wpi.first.wpilibj.CANTalon.TrajectoryPoint;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
+/**
+ * DriveTrajectory
+ *
+ * Prepares two On the Fly Motion Profiles (left and right) and
+ * executes them.
+ *
+ * @author mwtidd
+ *
+ */
 public class DriveTrajectory extends Command{
 
 	private long startTime = 0;
@@ -17,20 +32,22 @@ public class DriveTrajectory extends Command{
 
 	boolean motionProfileStarted = true;
 	//true indicates left profile
-	OnTheFlyMotionProfile leftProfile;
+	OtfMotionProfile leftProfile;
 	//false indicates right profile
-	OnTheFlyMotionProfile rightProfile;
+	OtfMotionProfile rightProfile;
 
 	CANTalon leftTalon;
 	CANTalon rightTalon;
+
+	int loopCounter = 0;
 
 
 	public DriveTrajectory(Subsystem driveTrain, CANTalon leftTalon, CANTalon rightTalon) {
 		requires(driveTrain);
 		//true indicates left profile
-		leftProfile = new OnTheFlyMotionProfile(leftTalon, true);
+		leftProfile = new OtfMotionProfile(leftTalon, true);
 		//false indicates right profile
-		rightProfile = new OnTheFlyMotionProfile(rightTalon, false);
+		rightProfile = new OtfMotionProfile(rightTalon, false);
 
 		this.leftTalon = leftTalon;
 		this.rightTalon = rightTalon;
@@ -77,6 +94,14 @@ public class DriveTrajectory extends Command{
         	leftProfile.startMotionProfile();
 
         	motionProfileStarted = false;
+    	}
+
+
+    	loopCounter++;
+    	if(loopCounter % 10 == 0){
+    		loopCounter = 0;
+    		CombinedTrajectoryProgress progress = new CombinedTrajectoryProgress(new TrajectoryProgress(leftProfile), new TrajectoryProgress(rightProfile));
+    		TrajectoryProgressManager.getInstance().setProgress(progress);
     	}
 	}
 

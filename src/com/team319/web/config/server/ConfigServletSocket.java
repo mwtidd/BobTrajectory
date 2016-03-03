@@ -53,7 +53,6 @@ public class ConfigServletSocket extends WebSocketAdapter implements IConfigChan
     @Override
     public void onWebSocketError(Throwable cause) {
     	super.onWebSocketError(cause);
-    	ConfigManager.getInstance().unregisterListener(this);
     }
 
     public void onWebSocketText(String message) {
@@ -78,14 +77,14 @@ public class ConfigServletSocket extends WebSocketAdapter implements IConfigChan
     			config = mapper.readValue(message, DriveConfig.class);
 
     			//let any other listeners know the config has changed
-    			ConfigManager.getInstance().setConfig(config, this);
+    			ConfigManager.getInstance().setConfig(config);
 
     			//generate a trajectory with the new config
     			TrajectoryManager.getInstance().generateTrajectory();
         	} catch (JsonParseException e) {
     			logger.error("Unable to Parse Json");
     		} catch (JsonMappingException e) {
-    			logger.error("The object is not a WaypointList");
+    			logger.error("The object is not a Config");
     		} catch (IOException e) {
     			logger.error("Unable to Write Object");
     		}

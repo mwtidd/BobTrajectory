@@ -25,6 +25,8 @@ import com.team319.waypoint.WaypointList;
 import com.team319.waypoint.WaypointManager;
 import com.team319.web.config.server.ConfigServletSocket;
 import com.team319.web.trajectory.server.TrajectoryServletSocket;
+import com.team319.config.ConfigManager;
+import com.team319.config.DriveConfig;
 import com.team319.config.DriveConfigManager;
 import com.team319.trajectory.CombinedSrxMotionProfile;
 import com.team319.trajectory.SRXTranslator;
@@ -77,8 +79,24 @@ public class ConfigClientSocket extends WebSocketAdapter implements ITrajectoryC
 				logger.error("Unable to sleep");
 			}
     	}else {
-    		//we received something other than the typical pong
+    		//it wasn't a basic ping
+    		ObjectMapper mapper = new ObjectMapper();
 
+    		DriveConfig config = null;
+        	try {
+        		//check to see if it's a Config
+        		config = mapper.readValue(message, DriveConfig.class);
+
+        		//let any listeners know the config has changed
+        		ConfigManager.getInstance().setConfig(config);
+
+        	} catch (JsonParseException e) {
+    			logger.error("Unable to Parse Json");
+    		} catch (JsonMappingException e) {
+    			logger.error("The object is not a WaypointList");
+    		} catch (IOException e) {
+    			logger.error("Unable to Write Object");
+    		}
     	}
     }
 

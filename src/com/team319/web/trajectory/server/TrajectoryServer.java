@@ -12,6 +12,7 @@ import com.team319.TrajectoryServerMain;
 import com.team319.trajectory.TrajectoryManager;
 import com.team319.web.config.server.ConfigServlet;
 import com.team319.web.path.server.PathServlet;
+import com.team319.web.trajectory.progress.server.TrajectoryProgressServlet;
 import com.team319.web.waypoint.client.WaypointClient;
 import com.team319.web.waypoint.server.WaypointServlet;
 
@@ -49,6 +50,9 @@ public class TrajectoryServer {
 
         ServletHolder trajectoryServlet = new ServletHolder("trajectory", new TrajectoryServlet());
         context.addServlet(trajectoryServlet, "/trajectory");
+
+        ServletHolder trajectoryProgressServlet = new ServletHolder("progress", new TrajectoryProgressServlet());
+        context.addServlet(trajectoryProgressServlet, "/trajectory/progress");
 
         ServletHolder waypointServlet = new ServletHolder("waypoints", new WaypointServlet());
         context.addServlet(waypointServlet, "/waypoints");

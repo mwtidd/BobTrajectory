@@ -27,6 +27,7 @@ import com.team319.config.ConfigManager;
 import com.team319.config.DriveConfig;
 import com.team319.path.PathHistory;
 import com.team319.path.PathManager;
+import com.team319.trajectory.progress.CombinedTrajectoryProgress;
 import com.team319.waypoint.Waypoint;
 import com.team319.waypoint.WaypointList;
 import com.team319.waypoint.WaypointManager;
