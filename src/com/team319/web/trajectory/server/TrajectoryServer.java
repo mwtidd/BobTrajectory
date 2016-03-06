@@ -12,6 +12,8 @@ import com.team319.TrajectoryServerMain;
 import com.team319.trajectory.TrajectoryManager;
 import com.team319.web.config.server.ConfigServlet;
 import com.team319.web.path.server.PathServlet;
+import com.team319.web.pid.server.PidServlet;
+import com.team319.web.pid.status.server.PidStatusServlet;
 import com.team319.web.trajectory.progress.server.TrajectoryProgressServlet;
 import com.team319.web.waypoint.client.WaypointClient;
 import com.team319.web.waypoint.server.WaypointServlet;
@@ -62,6 +64,12 @@ public class TrajectoryServer {
 
         ServletHolder configServlet = new ServletHolder("config", new ConfigServlet());
         context.addServlet(configServlet, "/config");
+
+        ServletHolder pidServlet = new ServletHolder("pid", new PidServlet());
+        context.addServlet(pidServlet, "/pid");
+
+        ServletHolder pidStatusServlet = new ServletHolder("status", new PidStatusServlet());
+        context.addServlet(pidStatusServlet, "/pid/status");
 
         try {
         	TrajectoryManager.getInstance().loadTrajectories();

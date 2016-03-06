@@ -54,9 +54,7 @@ public class TrajectoryProgressServletSocket extends WebSocketAdapter implements
     		//we received a ping from a client, we should pong back
     		try {
     			Thread.sleep(100);
-				getRemote().sendString("pong");
-			} catch (IOException e) {
-				logger.error("Unable to send pong");
+				getRemote().sendStringByFuture("pong");
 			} catch (InterruptedException e) {
 				logger.error("Unable to sleep");
 			}
@@ -98,13 +96,11 @@ public class TrajectoryProgressServletSocket extends WebSocketAdapter implements
 			RemoteEndpoint remote = getRemote();
 
 			if(remote != null){
-				remote.sendString(combinedJson);
+				remote.sendStringByFuture(combinedJson);
 			}else{
 				logger.error("The client has disconnected");
 			}
 
-		} catch (IOException e) {
-			logger.error("Unable to Write Object");
 		} catch (Exception e){
 			logger.error("Unable to Send Json");
 		}

@@ -48,7 +48,7 @@ public class TrajectoryClient {
 			            Session session = futureSession.get();
 
 			            //start playing ping pong with the server
-			            session.getRemote().sendString("ping");
+			            session.getRemote().sendStringByFuture("ping");
 
 			            //the socket connection has been established, our work is done here
 			            connected = true;

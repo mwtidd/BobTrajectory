@@ -12,6 +12,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.team319.config.ConfigManager;
 import com.team319.config.DriveConfig;
+import com.team319.pid.PidManager;
 import com.team319.trajectory.CombinedSrxMotionProfile;
 import com.team319.trajectory.ITrajectoryChangeListener;
 import com.team319.trajectory.TrajectoryManager;
@@ -23,6 +24,8 @@ import com.team319.waypoint.Waypoint;
 import com.team319.waypoint.WaypointList;
 import com.team319.waypoint.WaypointManager;
 import com.team319.web.config.client.ConfigClient;
+import com.team319.web.pid.client.PidClient;
+import com.team319.web.pid.status.client.PidStatusClient;
 import com.team319.web.trajectory.client.TrajectoryClient;
 import com.team319.web.trajectory.progress.client.TrajectoryProgressClient;
 
@@ -50,6 +53,8 @@ public class RobotSimulator{
 			ConfigClient.start("localhost");
 			TrajectoryClient.start("localhost");
 			TrajectoryProgressClient.start("localhost");
+			PidClient.start("localhost");
+			PidStatusClient.start("localhost");
 		} catch (Exception e) {
 			logger.error("Error Starting Trajectory Client");
 		}
@@ -59,6 +64,8 @@ public class RobotSimulator{
 		simulator = new Simulator();
 
 		TrajectoryManager.getInstance().registerListener(simulator);
+
+		PidManager.getInstance().registerListener(simulator);
 
 		while(running){
 

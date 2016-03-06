@@ -61,9 +61,7 @@ public class ConfigServletSocket extends WebSocketAdapter implements IConfigChan
     		//we received a ping from a client, we should pong back
     		try {
     			Thread.sleep(100);
-				getRemote().sendString("pong");
-			} catch (IOException e) {
-				logger.error("Unable to send pong");
+				getRemote().sendStringByFuture("pong");
 			} catch (InterruptedException e) {
 				logger.error("Unable to sleep");
 			}
@@ -101,12 +99,10 @@ public class ConfigServletSocket extends WebSocketAdapter implements IConfigChan
 			String configJson = mapper.writeValueAsString(config);
 			RemoteEndpoint endpoint = getRemote();
 			if(endpoint != null){
-				getRemote().sendString(configJson);
+				getRemote().sendStringByFuture(configJson);
 			}
 		} catch (JsonProcessingException e) {
 			logger.error("Unable to parse config json.");
-		} catch (IOException e) {
-			logger.error("Unable to send json.");
 		}
     }
 

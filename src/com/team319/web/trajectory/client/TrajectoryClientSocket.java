@@ -55,10 +55,8 @@ public class TrajectoryClientSocket extends WebSocketAdapter implements ITraject
     	if(message.equalsIgnoreCase("pong")){
     		//we received a pong back from the server, we should ping back
     		try {
-				getRemote().sendString("ping");
+				getRemote().sendStringByFuture("ping");
 				Thread.sleep(100);
-			} catch (IOException e) {
-				logger.error("Unable to send ping");
 			} catch (InterruptedException e) {
 				logger.error("Unable to sleep");
 			}

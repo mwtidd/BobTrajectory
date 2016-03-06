@@ -52,7 +52,7 @@ public class WaypointClient {
 			            Session session = futureSession.get();
 
 			            //start playing ping pong with the robot
-			            session.getRemote().sendString("ping");
+			            session.getRemote().sendStringByFuture("ping");
 
 			            //the socket connection has been established, our work is done here
 			            connected = true;

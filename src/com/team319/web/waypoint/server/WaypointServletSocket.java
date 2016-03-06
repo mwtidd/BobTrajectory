@@ -62,9 +62,7 @@ public class WaypointServletSocket extends WebSocketAdapter implements IWaypoint
     		//we received a ping from a client, we should pong back
     		try {
     			Thread.sleep(100);
-				getRemote().sendString("pong");
-			} catch (IOException e) {
-				logger.error("Unable to send pong");
+				getRemote().sendStringByFuture("pong");
 			} catch (InterruptedException e) {
 				logger.error("Unable to sleep");
 			}
@@ -103,12 +101,10 @@ public class WaypointServletSocket extends WebSocketAdapter implements IWaypoint
 			String waypointListJson = mapper.writeValueAsString(waypointList);
 			RemoteEndpoint endpoint = getRemote();
 			if(endpoint != null){
-				getRemote().sendString(waypointListJson);
+				getRemote().sendStringByFuture(waypointListJson);
 			}
 		} catch (JsonProcessingException e) {
 			logger.error("Unable to parse waypoint list json.");
-		} catch (IOException e) {
-			logger.error("Unable to send json.");
 		}
 
     }
