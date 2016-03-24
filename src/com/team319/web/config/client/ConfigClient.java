@@ -6,14 +6,8 @@ import java.util.concurrent.Future;
 
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.team319.TrajectoryClientMain;
-import com.team319.TrajectoryServerMain;
-import com.team319.web.trajectory.client.TrajectoryClientSocket;
 
 /**
  * This is meant to run on the Kangraoo or the Driver Station

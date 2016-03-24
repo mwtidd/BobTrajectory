@@ -12,15 +12,9 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.team319.path.IPathChangeListener;
-import com.team319.path.Path;
-import com.team319.path.PathManager;
-import com.team319.trajectory.TrajectoryManager;
 import com.team319.trajectory.progress.CombinedTrajectoryProgress;
 import com.team319.trajectory.progress.ITrajectoryProgressChangeListener;
 import com.team319.trajectory.progress.TrajectoryProgressManager;
-import com.team319.waypoint.WaypointList;
-import com.team319.waypoint.WaypointManager;
 
 public class TrajectoryProgressServletSocket extends WebSocketAdapter implements ITrajectoryProgressChangeListener{
 

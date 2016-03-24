@@ -1,7 +1,5 @@
 package com.team319.web.trajectory.progress.server;
 
-import javax.servlet.annotation.WebServlet;
-
 import org.eclipse.jetty.websocket.servlet.WebSocketServlet;
 import org.eclipse.jetty.websocket.servlet.WebSocketServletFactory;
 

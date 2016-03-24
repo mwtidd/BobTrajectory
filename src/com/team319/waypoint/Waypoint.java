@@ -2,6 +2,9 @@ package com.team319.waypoint;
 
 import org.json.simple.JSONObject;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
 public class Waypoint {
 
 	private double x = 0d;

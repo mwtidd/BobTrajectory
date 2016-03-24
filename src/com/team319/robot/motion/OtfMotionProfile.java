@@ -31,7 +31,6 @@ import edu.wpi.first.wpilibj.CANTalon.TalonControlMode;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.team319.config.CanTalonConfig;
 import com.team319.trajectory.CombinedSrxMotionProfile;
 import com.team319.trajectory.TrajectoryManager;
 

@@ -1,8 +1,6 @@
 package com.team319.web.path.server;
 
 
-import java.io.IOException;
-
 import org.eclipse.jetty.websocket.api.RemoteEndpoint;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.WebSocketAdapter;

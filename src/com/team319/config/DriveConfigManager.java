@@ -1,7 +1,6 @@
 package com.team319.config;
 
 import java.util.ArrayList;
-import java.util.EventListener;
 import java.util.List;
 
 import org.slf4j.Logger;

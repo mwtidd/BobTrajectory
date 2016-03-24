@@ -12,15 +12,12 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.team254.lib.trajectory.Path;
-import com.team254.lib.trajectory.PathGenerator;
-import com.team254.lib.trajectory.TrajectoryGenerator;
-import com.team254.lib.trajectory.WaypointSequence;
-import com.team319.config.ConfigManager;
-import com.team319.trajectory.CombinedSrxMotionProfile;
-import com.team319.trajectory.SRXTranslator;
-import com.team319.trajectory.ITrajectoryChangeListener;
+import com.team319.auto.AutoConfig;
+import com.team319.auto.AutoConfigException;
+import com.team319.auto.AutoManager;
+import com.team319.auto.AutoModes;
 import com.team319.trajectory.TrajectoryManager;
 import com.team319.waypoint.IWaypointChangeListener;
 import com.team319.waypoint.WaypointList;
@@ -41,7 +38,7 @@ public class WaypointServletSocket extends WebSocketAdapter implements IWaypoint
     	super.onWebSocketConnect(sess);
     	WaypointManager.getInstance().registerListener(this);
     	logger.info("Connected");
-    	//TODO: send current waypoint list
+    	sendWaypoints(WaypointManager.getInstance().getWaypointList());
     }
 
     @Override
@@ -68,26 +65,28 @@ public class WaypointServletSocket extends WebSocketAdapter implements IWaypoint
 			}
     	}else{
     		//it wasn't a basic ping
+
     		ObjectMapper mapper = new ObjectMapper();
 
-    		WaypointList waypoints = null;
-        	try {
-        		//check to see if it's a Waypoint List, if it is create a trajectory
-        		waypoints = mapper.readValue(message, WaypointList.class);
+    		try {
+				final JsonNode jsonNode = mapper.readTree(message);
 
-        		//let any listeners know the waypoints have changes
-        		WaypointManager.getInstance().setWaypointList(waypoints);
+				final String className = jsonNode.get("__class").asText();
 
-        		//generate a trajectory
-        		TrajectoryManager.getInstance().generateTrajectory();
+				if(className.equalsIgnoreCase(WaypointList.class.getName())){
+					WaypointList waypointList = mapper.readValue(message, WaypointList.class);
+					WaypointManager.getInstance().setWaypointList(waypointList);
+	    			TrajectoryManager.getInstance().generateTrajectory();
+				}else{
 
-        	} catch (JsonParseException e) {
-    			logger.error("Unable to Parse Json");
-    		} catch (JsonMappingException e) {
-    			logger.error("The object is not a WaypointList");
-    		} catch (IOException e) {
-    			logger.error("Unable to Write Object");
-    		}
+				}
+
+
+			} catch (JsonProcessingException e1) {
+				logger.error("Unable to Process Json");
+			} catch (IOException e1) {
+				logger.error("IO Error");
+			}
 
     	}
 
@@ -96,6 +95,11 @@ public class WaypointServletSocket extends WebSocketAdapter implements IWaypoint
 
     @Override
     public void onWaypointChange(WaypointList waypointList) {
+    	sendWaypoints(waypointList);
+    	WaypointManager.getInstance().save();
+    }
+
+    private void sendWaypoints(WaypointList waypointList){
     	ObjectMapper mapper = new ObjectMapper();
 		try {
 			String waypointListJson = mapper.writeValueAsString(waypointList);
@@ -106,7 +110,6 @@ public class WaypointServletSocket extends WebSocketAdapter implements IWaypoint
 		} catch (JsonProcessingException e) {
 			logger.error("Unable to parse waypoint list json.");
 		}
-
     }
 
 }

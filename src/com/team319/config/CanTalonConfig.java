@@ -1,7 +1,5 @@
 package com.team319.config;
 
-import edu.wpi.first.wpilibj.CANTalon.FeedbackDevice;
-
 public class CanTalonConfig {
 
 	private int encoderCodesPerRev = 1024;

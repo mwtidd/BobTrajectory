@@ -13,24 +13,9 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.team254.lib.trajectory.Path;
-import com.team254.lib.trajectory.PathGenerator;
-import com.team254.lib.trajectory.TrajectoryGenerator;
-import com.team254.lib.trajectory.WaypointSequence;
-import com.team319.config.ConfigManager;
-import com.team319.pid.IPidChangeListener;
-import com.team319.pid.Pid;
-import com.team319.pid.PidManager;
 import com.team319.pid.status.IPidStatusChangeListener;
 import com.team319.pid.status.PidStatus;
 import com.team319.pid.status.PidStatusManager;
-import com.team319.trajectory.CombinedSrxMotionProfile;
-import com.team319.trajectory.SRXTranslator;
-import com.team319.trajectory.ITrajectoryChangeListener;
-import com.team319.trajectory.TrajectoryManager;
-import com.team319.waypoint.IWaypointChangeListener;
-import com.team319.waypoint.WaypointList;
-import com.team319.waypoint.WaypointManager;
 
 public class PidStatusServletSocket extends WebSocketAdapter implements IPidStatusChangeListener{
 

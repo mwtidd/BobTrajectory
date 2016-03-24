@@ -1,15 +1,24 @@
 package com.team319.config;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.EventListener;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.team319.waypoint.IWaypointChangeListener;
-import com.team319.waypoint.WaypointList;
-import com.team319.web.config.server.ConfigServletSocket;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.team319.auto.AutoConfig;
+import com.team319.auto.AutoModes;
 
 public class ConfigManager {
 
@@ -24,6 +33,7 @@ public class ConfigManager {
 	private ConfigManager(){
 		listeners = new ArrayList<IConfigChangeListener>();
 		config = new DriveConfig();
+		recall();
 	}
 
 	public static ConfigManager getInstance(){
@@ -49,6 +59,65 @@ public class ConfigManager {
 		this.config = config;
 		for(IConfigChangeListener listener : listeners){
 			listener.onConfigChange(config);
+		}
+		save();
+	}
+
+	private void save() {
+
+		try{
+			File file = new File("config/driveConfig.json");
+
+			// if file doesnt exists, then create it
+			if (!file.exists()) {
+				file.createNewFile();
+			}
+
+			FileWriter fw = new FileWriter(file.getAbsoluteFile());
+			BufferedWriter bw = new BufferedWriter(fw);
+			ObjectMapper mapper = new ObjectMapper();
+			try {
+				String json = mapper.writeValueAsString(config);
+				bw.write(json);
+			} catch (JsonProcessingException e) {
+				logger.error("Parse Error");
+			}
+
+			bw.close();
+		}catch (IOException e) {
+			logger.error("IO Error");
+		}
+
+
+	}
+
+	public void recall(){
+		try{
+			BufferedReader br = new BufferedReader(new FileReader("config/driveConfig.json"));
+		    StringBuilder sb = new StringBuilder();
+		    String line = br.readLine();
+
+		    while (line != null) {
+		        sb.append(line);
+		        sb.append(System.lineSeparator());
+		        line = br.readLine();
+		    }
+		    String everything = sb.toString();
+
+			ObjectMapper mapper = new ObjectMapper();
+
+			DriveConfig config = mapper.readValue(everything, DriveConfig.class);
+
+			this.setConfig(config);
+
+		}catch (FileNotFoundException e) {
+			logger.error("File Error");
+		} catch (JsonParseException e) {
+			logger.error("Parse Error");
+		} catch (JsonMappingException e) {
+			logger.error("Mapping Error");
+		} catch (IOException e) {
+			logger.error("IO Error");
 		}
 	}
 

@@ -3,11 +3,13 @@ package com.team319.waypoint;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.team254.lib.trajectory.WaypointSequence;
-import com.team319.trajectory.TrajectoryManager;
 
+
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, property = "__class")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class WaypointList {
 
 	private boolean cachable = false;

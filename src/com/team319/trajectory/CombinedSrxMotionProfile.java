@@ -1,8 +1,5 @@
 package com.team319.trajectory;
 
-import java.io.IOException;
-
-import org.eclipse.jetty.websocket.api.RemoteEndpoint;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

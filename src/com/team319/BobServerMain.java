@@ -1,12 +1,10 @@
 package com.team319;
 
-import org.apache.log4j.PropertyConfigurator;
+import org.opencv.core.Core;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.team319.trajectory.TrajectoryManager;
-import com.team319.web.trajectory.server.TrajectoryServer;
-import com.team319.web.waypoint.client.WaypointClient;
+import com.team319.web.BobServer;
 
 /**
  * A basic way to fire up a trajectory server.
@@ -18,19 +16,24 @@ import com.team319.web.waypoint.client.WaypointClient;
  * @author mwtidd
  *
  */
-public class TrajectoryServerMain {
+public class BobServerMain {
 
-	private static Logger logger = LoggerFactory.getLogger(TrajectoryServerMain.class);
+	private static Logger logger = LoggerFactory.getLogger(BobServerMain.class);
 
 	public static void main(String[] args) {
+
+		// load the native OpenCV library
+		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 
 		logger.info("Starting Trajectory Server");
 
 		try {
-			TrajectoryServer.startServer();
+			BobServer.startServer();
 		} catch (Exception e) {
-			logger.error("Error Starting Trajectory Client");
+			e.printStackTrace();
+			logger.error("Error Starting Server");
 		}
+
 	}
 
 }

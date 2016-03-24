@@ -1,7 +1,11 @@
 package com.team319.config;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.team254.lib.trajectory.TrajectoryGenerator;
 
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, property = "__class")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class DriveConfig {
 
 	private double dt = 0.02;

@@ -1,13 +1,10 @@
 package com.team319.pid.status;
 
 import java.util.ArrayList;
-import java.util.EventListener;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.team254.lib.trajectory.TrajectoryGenerator;
 
 public class PidStatusManager {
 

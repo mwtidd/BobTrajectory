@@ -13,20 +13,10 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.team254.lib.trajectory.Path;
-import com.team254.lib.trajectory.PathGenerator;
-import com.team254.lib.trajectory.TrajectoryGenerator;
-import com.team254.lib.trajectory.WaypointSequence;
 import com.team319.config.ConfigManager;
 import com.team319.config.DriveConfig;
 import com.team319.config.IConfigChangeListener;
-import com.team319.trajectory.CombinedSrxMotionProfile;
-import com.team319.trajectory.SRXTranslator;
-import com.team319.trajectory.ITrajectoryChangeListener;
 import com.team319.trajectory.TrajectoryManager;
-import com.team319.waypoint.IWaypointChangeListener;
-import com.team319.waypoint.WaypointList;
-import com.team319.waypoint.WaypointManager;
 
 public class ConfigServletSocket extends WebSocketAdapter implements IConfigChangeListener{
 
@@ -42,6 +32,7 @@ public class ConfigServletSocket extends WebSocketAdapter implements IConfigChan
     	super.onWebSocketConnect(sess);
     	logger.info("Connected");
     	ConfigManager.getInstance().registerListener(this);
+    	sendConfig(ConfigManager.getInstance().getConfig());
     }
 
     @Override
@@ -94,6 +85,10 @@ public class ConfigServletSocket extends WebSocketAdapter implements IConfigChan
 
     @Override
     public void onConfigChange(DriveConfig config) {
+    	sendConfig(config);
+    }
+
+    private void sendConfig(DriveConfig config){
     	ObjectMapper mapper = new ObjectMapper();
 		try {
 			String configJson = mapper.writeValueAsString(config);

@@ -8,7 +8,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.EventListener;
 import java.util.List;
 import java.util.UUID;
 
@@ -20,18 +19,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.team254.lib.trajectory.Path;
-import com.team254.lib.trajectory.PathGenerator;
-import com.team254.lib.trajectory.WaypointSequence;
 import com.team319.HistoryBundle;
 import com.team319.config.ConfigManager;
 import com.team319.config.DriveConfig;
 import com.team319.path.PathHistory;
 import com.team319.path.PathManager;
-import com.team319.trajectory.progress.CombinedTrajectoryProgress;
-import com.team319.waypoint.Waypoint;
 import com.team319.waypoint.WaypointList;
 import com.team319.waypoint.WaypointManager;
-import com.team319.web.trajectory.server.TrajectoryServletSocket;
 
 /**
  * This is used both on the robot and the trajectory sever.

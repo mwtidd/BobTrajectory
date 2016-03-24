@@ -1,16 +1,12 @@
 package com.team319.robot.commands;
 
 import com.team319.robot.motion.OtfMotionProfile;
-import com.team319.trajectory.TrajectoryManager;
 import com.team319.trajectory.progress.CombinedTrajectoryProgress;
 import com.team319.trajectory.progress.TrajectoryProgress;
 import com.team319.trajectory.progress.TrajectoryProgressManager;
 
 import edu.wpi.first.wpilibj.CANTalon;
-import edu.wpi.first.wpilibj.TalonSRX;
-import edu.wpi.first.wpilibj.CANTalon.MotionProfileStatus;
 import edu.wpi.first.wpilibj.CANTalon.TalonControlMode;
-import edu.wpi.first.wpilibj.CANTalon.TrajectoryPoint;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
