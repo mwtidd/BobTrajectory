@@ -27,6 +27,7 @@
 		<fileset dir="lib">
 			<include name="**/*.jar" />
 		</fileset>
+		<fileset dir="${ocv.dir}" includes="**/opencv-310.jar"/>
 	</path>
 
 	<target name="clean" description="Clean up all build and distribution artifacts.">
@@ -50,14 +51,14 @@
 
 
 	<target name="compress" depends="compile">
-		        <jar destfile="${jar.file}" basedir="${build.dir}" level="9"/>
+		        <jar destfile="${robot.jar.file}" basedir="${build.dir}" level="9"/>
 		</target>
 
 		<target name="jar" depends="compile">
-			<delete file="${jar.file}"/>
+			<delete file="${robot.jar.file}"/>
 			<mkdir dir="${dist.dir}"/>
 
-			<jar destfile="${jar.file}" basedir="${build.dir}" compress="true" level="9">
+			<jar destfile="${robot.jar.file}" basedir="${build.dir}" compress="true" level="9">
 				<manifest>
 					<attribute name="Main-Class" value="${main.class}"/>
 				</manifest>

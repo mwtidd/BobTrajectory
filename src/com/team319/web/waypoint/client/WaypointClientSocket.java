@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.team319.waypoint.IWaypointChangeListener;
 import com.team319.waypoint.WaypointList;
@@ -58,27 +57,16 @@ public class WaypointClientSocket extends WebSocketAdapter implements IWaypointC
     	}else {
     		//we received something other than the typical pong
 
+    		/**
     		ObjectMapper mapper = new ObjectMapper();
-
-    		try {
-				final JsonNode jsonNode = mapper.readTree(message);
-
-				final String className = jsonNode.get("__class").asText();
-
-				if(className.equalsIgnoreCase(WaypointList.class.getName())){
-					WaypointList waypointList = mapper.readValue(message, WaypointList.class);
-					WaypointManager.getInstance().setWaypointList(waypointList);
-				}else{
-
-				}
-
-
-			} catch (JsonProcessingException e1) {
-				logger.error("Unable to Process Json");
-			} catch (IOException e1) {
-				logger.error("IO Error");
-			}
-
+        	try {
+        		WaypointList list = mapper.readValue(message, WaypointList.class);
+    			WaypointManager.getInstance().setWaypointList(list);
+        	} catch (JsonParseException e) {
+    		} catch (JsonMappingException e) {
+    		} catch (IOException e) {
+    		}
+			**/
 
     	}
 

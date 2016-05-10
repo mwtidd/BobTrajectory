@@ -13,6 +13,6 @@ public class VisionListener implements ITargetListener{
 
 	@Override
 	public void onTargetChange(Target target) {
-			logger.info("Got New Target");
+			logger.info("Got New Target: " + target.getHorizontalOffset());
 	}
 }

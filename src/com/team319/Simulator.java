@@ -24,8 +24,6 @@ public class Simulator implements ITrajectoryChangeListener, IPidChangeListener{
 
 		long startTime = System.currentTimeMillis();
 
-		double elapsedTime = 0;
-
 		long sleepTime = 20;
 
 		int i = 5;
@@ -71,15 +69,10 @@ public class Simulator implements ITrajectoryChangeListener, IPidChangeListener{
 	public void onTrajectoryChange(CombinedSrxMotionProfile latestProfile) {
 		long startTime = System.currentTimeMillis();
 
-		long totalTime = (long) (1000 * ConfigManager.getInstance().getConfig().getDt() * latestProfile.getLeftProfile().getNumPoints());
-
-		double elapsedTime = 0;
-
 		double maxVelocity = 15;
 		double maxAcc = 5;
 
 		double velocity = 0;
-		double distance = 0;
 
 		int index = 0;
 
@@ -87,8 +80,6 @@ public class Simulator implements ITrajectoryChangeListener, IPidChangeListener{
 
 			double[] leftPoint = latestProfile.getLeftProfile().getPoints()[index];
 			double[] rightPoint = latestProfile.getRightProfile().getPoints()[index];
-
-			elapsedTime = System.currentTimeMillis() - startTime;
 
 			if(velocity < maxVelocity){
 				velocity += (maxAcc/1000);

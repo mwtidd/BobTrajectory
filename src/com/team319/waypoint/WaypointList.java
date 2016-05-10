@@ -3,13 +3,8 @@ package com.team319.waypoint;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.team254.lib.trajectory.WaypointSequence;
 
-
-@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, property = "__class")
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class WaypointList {
 
 	private boolean cachable = false;

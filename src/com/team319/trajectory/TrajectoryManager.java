@@ -45,8 +45,6 @@ public class TrajectoryManager {
 
 	private CombinedSrxMotionProfile latestProfile;
 
-	private static final String PATH_NAME = "Path";
-
 	private TrajectoryManager(){
 		listeners = new ArrayList<ITrajectoryChangeListener>();
 		latestProfile = null;

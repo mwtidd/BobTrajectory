@@ -12,6 +12,9 @@ public class AutoConfigException {
 
 	private String type;
 
+	public String __class = AutoConfigException.class.getName();
+
+
 	public AutoConfigException(){
 
 	}

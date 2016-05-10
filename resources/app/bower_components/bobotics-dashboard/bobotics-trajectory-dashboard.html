@@ -1,0 +1,224 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<link rel="import" href="../polymer/polymer.html">
+
+<link rel="import" href="bobotics-socket.html">
+<link rel="import" href="bobotics-velocity-chart.html">
+<link rel="import" href="bobotics-waypoint-manager.html">
+<link rel="import" href="bobotics-config-manager.html">
+
+<link rel="import" href="../google-chart/google-chart.html">
+<link rel="import" href="../paper-input/paper-input.html">
+<link rel="import" href="../paper-fab/paper-fab.html">
+<link rel="import" href="../paper-drawer-panel/paper-drawer-panel.html">
+<link rel="import" href="../paper-header-panel/paper-header-panel.html">
+<link rel="import" href="../paper-card/paper-card.html">
+<link rel="import" href="../paper-toolbar/paper-toolbar.html">
+<link rel="import" href="../paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../iron-icons/iron-icons.html">
+<link rel="import" href="../font-roboto-local/roboto.html">
+<link rel="import" href="../iron-resizable-behavior/iron-resizable-behavior.html">
+
+<link rel="import" href="../iron-flex-layout/classes/iron-flex-layout.html">
+
+
+
+<!--
+An element to start from.
+
+
+
+Example:
+
+    <bobotics-trajectory-dashboard></bobotics-trajectory-dashboard>
+
+@demo
+-->
+<dom-module id="bobotics-trajectory-dashboard">
+
+  <style is="custom-style">
+    :host {
+      @apply(--layout-vertical);
+
+      font-family: Roboto;
+
+      --paper-fab-background: var(--paper-indigo-500);
+      --paper-fab-keyboard-focus-background: var(--paper-indigo-900);
+
+    }
+
+    :host paper-card{
+      margin: 16px;
+      @apply(--layout-flex);
+    }
+
+    :host ::content #mainContent{
+       @apply(--layout-vertical);
+     }
+
+    :host ::content #drawerContent{
+      @apply(--layout-vertical);
+    }
+
+    :host ::content .card-actions{
+      @apply(--layout-horizontal);
+      @apply(--layout-center-center);
+    }
+
+    :host #hiddenChart{
+      width: 0;
+      height: 0;
+      opacity: 0;
+    }
+
+    :host google-chart{
+      @apply(--layout-flex);
+      width: auto;
+      height: auto;
+    }
+
+    :host #waypointList{
+
+    }
+
+    :host .waypoint{
+      @apply(--layout-horizontal);
+      @apply(--layout-center-center);
+    }
+
+    :host .waypoint > paper-input{
+      @apply(--layout-flex);
+      margin: 0 8px;
+    }
+
+    :host .actions .flex{
+      @apply(--layout-flex);
+    }
+
+    :host ::content .charts{
+      @apply(--layout-vertical);
+    }
+
+    :host ::content .charts > paper-card{
+      @apply(--layout-flex);
+    }
+  </style>
+
+  <template>
+    <paper-drawer-panel responsive-width="2000px" drawer-width="300px" disable-swipe>
+      <paper-header-panel drawer>
+        <paper-toolbar><div>Setting</div></paper-toolbar>
+        <div id="drawerContent">
+          <paper-card>
+            <div class="card-content">
+              <paper-input label="server" value="{{server}}"></paper-input>
+            </div>
+            <div class="buttons"></div>
+          </paper-card>
+          <bobotics-config-manager server="[[server]]"></bobotics-config-manager>
+        </div>
+      </paper-header-panel>
+      <paper-header-panel main>
+        <paper-toolbar>
+          <paper-icon-button icon="menu" paper-drawer-toggle></paper-icon-button>
+          <div>Bobotics Spline Generator</div>
+        </paper-toolbar>
+        <div id="mainContent">
+          <bobotics-waypoint-manager server="[[server]]"></bobotics-waypoint-manager>
+          <bobotics-velocity-chart server="[[server]]"></bobotics-velocity-chart>
+        </div>
+      </paper-header-panel>
+    </paper-drawer-panel>
+
+
+    <content></content>
+  </template>
+
+</dom-module>
+
+<script>
+
+  Polymer({
+
+    is: 'bobotics-trajectory-dashboard',
+
+    listeners: {
+
+    },
+
+    properties: {
+
+      server: {
+        type: String,
+        value: "localhost:5803"
+      },
+
+      isReady: {
+        type: Boolean,
+        value: false
+      },
+
+      timeChartData: {
+        type: Object,
+        value: function(){
+          return null;
+        }
+      },
+
+      posChartData: {
+        type: Object,
+        value: function(){
+          return null;
+        }
+      },
+
+
+
+      waypoints: {
+        type: Array,
+        value: function(){
+          return [{"x":0,"y":-1.5,"theta":0},{"x":11,"y":-1.5,"theta":0},{"x":21,"y":-10.5,"theta":-60}]
+        }
+      }
+    },
+
+    // Element Lifecycle
+
+    ready: function() {
+      // `ready` is called after all elements have been configured, but
+      // propagates bottom-up. This element's children are ready, but parents
+      // are not.
+      //
+      // This is the point where you should make modifications to the DOM (when
+      // necessary), or kick off any processes the element wants to perform.
+    },
+
+    attached: function() {
+      // `attached` fires once the element and its parents have been inserted
+      // into a document.
+      //
+      // This is a good place to perform any work related to your element's
+      // visual state or active behavior (measuring sizes, beginning animations,
+      // loading resources, etc).
+    },
+
+    detached: function() {
+      // The analog to `attached`, `detached` fires when the element has been
+      // removed from a document.
+      //
+      // Use this to clean up anything you did in `attached`.
+    },
+    saveRobot: function(){
+      this;
+    }
+
+  });
+
+</script>

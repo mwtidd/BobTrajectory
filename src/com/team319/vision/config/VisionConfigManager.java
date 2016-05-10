@@ -110,6 +110,8 @@ public class VisionConfigManager {
 			VisionConfig config = mapper.readValue(everything, VisionConfig.class);
 
 			this.setConfig(config);
+
+			br.close();
 		}catch (FileNotFoundException e) {
 			logger.error("File Error");
 		} catch (JsonParseException e) {

@@ -179,6 +179,8 @@ public class AutoManager {
 
 			this.setConfig(config);
 
+			br.close();
+
 		}catch (FileNotFoundException e) {
 			logger.error("File Error");
 		} catch (JsonParseException e) {
@@ -187,6 +189,8 @@ public class AutoManager {
 			logger.error("Mapping Error");
 		} catch (IOException e) {
 			logger.error("IO Error");
+		} finally {
+
 		}
 
 		try{
@@ -206,6 +210,8 @@ public class AutoManager {
 			AutoModes modes = mapper.readValue(everything, AutoModes.class);
 
 			this.setModes(modes);
+
+			br.close();
 		}catch (FileNotFoundException e) {
 			logger.error("File Error");
 		} catch (JsonParseException e) {

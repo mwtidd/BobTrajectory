@@ -24,8 +24,6 @@ public class TrajectoryProgressManager {
 
 	private CombinedTrajectoryProgress latestProgress;
 
-	private static final String PATH_NAME = "Path";
-
 	private TrajectoryProgressManager(){
 		listeners = new ArrayList<ITrajectoryProgressChangeListener>();
 		latestProgress = null;

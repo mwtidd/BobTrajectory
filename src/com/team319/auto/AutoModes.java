@@ -9,6 +9,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, property = "__class")
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AutoModes {
+
+	public String __class = AutoModes.class.getName();
+
 	private List<String> modes;
 	private List<String> positions;
 	private List<String> defenses;

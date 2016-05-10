@@ -9,9 +9,7 @@ import org.eclipse.jetty.websocket.api.WebSocketAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.team319.auto.AutoConfig;
@@ -156,7 +154,7 @@ public class AutoServletSocket extends WebSocketAdapter implements IAutoConfigCh
 			String json = mapper.writeValueAsString(exception);
 			RemoteEndpoint endpoint = getRemote();
 			if(endpoint != null){
-				logger.info(json);
+				//logger.info(json);
 				getRemote().sendStringByFuture(json);
 			}
 		} catch (JsonProcessingException e) {

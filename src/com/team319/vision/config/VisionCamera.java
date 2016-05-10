@@ -19,6 +19,9 @@ public class VisionCamera {
 	private boolean autoFocus = true;
 	private int focus = 0;
 
+	private int minTargetWidth = 0;
+	private int maxTargetWidth = Integer.MAX_VALUE;
+
 	private boolean filterImage = false;
 
 	public VisionCamera(){
@@ -111,6 +114,22 @@ public class VisionCamera {
 
 	public boolean isFilterImage() {
 		return filterImage;
+	}
+
+	public int getMaxTargetWidth() {
+		return maxTargetWidth;
+	}
+
+	public int getMinTargetWidth() {
+		return minTargetWidth;
+	}
+
+	public void setMaxTargetWidth(int maxTargetWidth) {
+		this.maxTargetWidth = maxTargetWidth;
+	}
+
+	public void setMinTargetWidth(int minTargetWidth) {
+		this.minTargetWidth = minTargetWidth;
 	}
 
 

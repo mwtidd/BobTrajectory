@@ -6,53 +6,26 @@ import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.servlets.CrossOriginFilter;
-import org.opencv.core.Core;
-import org.opencv.core.Mat;
-import org.opencv.core.MatOfByte;
-import org.opencv.core.MatOfPoint;
-import org.opencv.core.Point;
-import org.opencv.core.Rect;
-import org.opencv.core.Scalar;
-import org.opencv.imgcodecs.Imgcodecs;
-import org.opencv.imgproc.Imgproc;
-import org.opencv.videoio.VideoCapture;
-import org.opencv.videoio.Videoio;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.team319.BobServerMain;
 import com.team319.auto.AutoManager;
 import com.team319.auto.web.server.AutoServlet;
-import com.team319.config.ConfigManager;
-import com.team319.vision.BeaconController;
-import com.team319.vision.Target;
-import com.team319.vision.TargetManager;
-import com.team319.vision.config.VisionConfigManager;
-import com.team319.vision.config.VisionRgb;
+import com.team319.config.web.server.ConfigServlet;
+import com.team319.path.web.server.PathServlet;
+import com.team319.trajectory.web.server.TrajectoryServlet;
+import com.team319.vision.CameraController;
 import com.team319.vision.config.web.server.VisionConfigServlet;
-import com.team319.vision.image.ImageManager;
 import com.team319.vision.image.web.server.ImageServlet;
 import com.team319.vision.web.server.TargetServlet;
 import com.team319.waypoint.WaypointManager;
-import com.team319.web.config.server.ConfigServlet;
-import com.team319.web.path.server.PathServlet;
+import com.team319.waypoint.web.server.WaypointServlet;
 import com.team319.web.pid.server.PidServlet;
 import com.team319.web.pid.status.server.PidStatusServlet;
 import com.team319.web.trajectory.progress.server.TrajectoryProgressServlet;
-import com.team319.web.trajectory.server.TrajectoryServlet;
-import com.team319.web.waypoint.client.WaypointClientSocket;
-import com.team319.web.waypoint.server.WaypointServlet;
 
-import javafx.scene.image.Image;
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-
 import javax.servlet.DispatcherType;
 
 /**
@@ -68,7 +41,7 @@ public class BobServer {
 
 	private static Logger logger = LoggerFactory.getLogger(BobServer.class);
 
-	private static final Server SERVER = new Server(5803);
+	private static Server server;
 
 	private static final CameraController CAMERA = new CameraController();
 
@@ -84,6 +57,8 @@ public class BobServer {
  	 */
  	public static void initialize()
  	{
+
+ 		server = new Server(5803);
  		CAMERA.initialize();
 
  		CAMERA.startCamera();
@@ -91,7 +66,7 @@ public class BobServer {
  		AutoManager.getInstance().recall();
  		WaypointManager.getInstance().recall();
 
- 		BeaconController.getInstance().initialize();
+ 		//BeaconController.getInstance().initialize();
 
  		new Thread(new Runnable() {
 
@@ -100,7 +75,7 @@ public class BobServer {
 
  				ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
  		        context.setContextPath("/");
- 		        SERVER.setHandler(context);
+ 		       server.setHandler(context);
 
  		        FilterHolder cors = context.addFilter(CrossOriginFilter.class,"/*",EnumSet.of(DispatcherType.REQUEST));
  		        cors.setInitParameter(CrossOriginFilter.ALLOWED_ORIGINS_PARAM, "*");
@@ -148,9 +123,9 @@ public class BobServer {
  		        context.addServlet(holderPwd, "/");
 
  		        try {
- 					SERVER.start();
+ 		        	server.start();
  					logger.info("Server Started");
- 					SERVER.join();
+ 					server.join();
  					logger.info("Server Join");
  				} catch (Exception e) {
  					logger.error("Unable to Start Server");
@@ -160,21 +135,6 @@ public class BobServer {
  			}
 
  		}).start();
-
- 		/**
-
-         try {
-         	TrajectoryManager.getInstance().loadTrajectories();
-         	SERVER.start();
- 			//startCamera();
- 			BeaconController.getInstance().initialize();
-
- 			SERVER.join();
- 			//server.join();
- 		} catch (Exception e) {
- 			logger.error("Unable to start server");
- 		}
- 		**/
  	}
 
 

@@ -10,6 +10,9 @@ public class SelectedAuto {
 	private String selectedPosition = null;
 	private String selectedDefense = null;
 
+	public String __class = SelectedAuto.class.getName();
+
+
 	public SelectedAuto(){
 
 	}

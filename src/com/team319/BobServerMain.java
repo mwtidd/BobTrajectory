@@ -25,12 +25,11 @@ public class BobServerMain {
 		// load the native OpenCV library
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 
-		logger.info("Starting Trajectory Server");
+		logger.info("Starting Bobotics Server");
 
 		try {
 			BobServer.startServer();
 		} catch (Exception e) {
-			e.printStackTrace();
 			logger.error("Error Starting Server");
 		}
 

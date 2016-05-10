@@ -25,8 +25,6 @@ public class TrajectoryProgressClientSocket extends WebSocketAdapter implements 
 
 	private final double WHEELBASE_WIDTH = 23.25 / 12; //TODO: this should really be configurable
 
-	private static final String PATH_NAME = "Path";
-
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	public TrajectoryProgressClientSocket(){

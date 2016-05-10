@@ -55,7 +55,6 @@ public class SrxMotionProfile {
 	}
 
 	public JSONObject toJson() {
-		StringBuilder sb = new StringBuilder();
 		JSONObject obj = new JSONObject();
 		obj.put("numPoints", numPoints);
 		// obj.put("points", points);

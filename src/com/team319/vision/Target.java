@@ -1,10 +1,5 @@
 package com.team319.vision;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-
-@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, property = "__class")
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class Target {
 	private double horizontalOffset = 0;
 	private double verticalOffset = 0;
@@ -43,4 +38,5 @@ public class Target {
 	public double getDistance() {
 		return distance;
 	}
+
 }

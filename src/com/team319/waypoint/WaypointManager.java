@@ -111,6 +111,8 @@ public class WaypointManager {
 			WaypointList waypointList = mapper.readValue(everything, WaypointList.class);
 
 			this.setWaypointList(waypointList);
+
+			br.close();
 		}catch (FileNotFoundException e) {
 			logger.error("File Error");
 		} catch (JsonParseException e) {

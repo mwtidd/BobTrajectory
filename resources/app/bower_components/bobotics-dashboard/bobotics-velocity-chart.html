@@ -1,0 +1,363 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<link rel="import" href="../polymer/polymer.html">
+
+<link rel="import" href="bobotics-socket.html">
+
+<link rel="import" href="../paper-input/paper-input.html">
+<link rel="import" href="../paper-fab/paper-fab.html">
+<link rel="import" href="../paper-drawer-panel/paper-drawer-panel.html">
+<link rel="import" href="../paper-header-panel/paper-header-panel.html">
+<link rel="import" href="../paper-card/paper-card.html">
+<link rel="import" href="../paper-toolbar/paper-toolbar.html">
+<link rel="import" href="../paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../iron-icons/iron-icons.html">
+<link rel="import" href="../font-roboto-local/roboto.html">
+<link rel="import" href="../iron-resizable-behavior/iron-resizable-behavior.html">
+
+<link rel="import" href="../iron-flex-layout/classes/iron-flex-layout.html">
+
+<script src="../amcharts3/amcharts/amcharts.js"></script>
+<script src="../amcharts3/amcharts/serial.js"></script>
+<script src="../amcharts3/amcharts/xy.js"></script>
+<script src="../amcharts3/amcharts/themes/light.js"></script>
+
+<!--
+An element to start from.
+
+
+
+Example:
+
+    <bobotics-velocity-chart></bobotics-velocity-chart>
+
+@demo
+-->
+<dom-module id="bobotics-velocity-chart">
+
+  <style is="custom-style">
+    :host {
+      @apply(--layout-vertical);
+
+      font-family: Roboto;
+
+      --paper-fab-background: var(--paper-indigo-500);
+      --paper-fab-keyboard-focus-background: var(--paper-indigo-900);
+
+    }
+
+    :host paper-card{
+      margin: 16px;
+      @apply(--layout-flex);
+    }
+
+    :host ::content #mainContent{
+       @apply(--layout-vertical);
+     }
+
+    :host ::content #drawerContent{
+      @apply(--layout-vertical);
+    }
+
+    :host ::content .card-actions{
+      @apply(--layout-horizontal);
+      @apply(--layout-center-center);
+    }
+
+    :host #waypointList{
+
+    }
+
+    :host .waypoint{
+      @apply(--layout-horizontal);
+      @apply(--layout-center-center);
+    }
+
+    :host .waypoint > paper-input{
+      @apply(--layout-flex);
+      margin: 0 8px;
+    }
+
+    :host .actions .flex{
+      @apply(--layout-flex);
+    }
+
+    :host ::content #pathChart{
+      background: url('field.png');
+      background-size: 100% 100%;
+      background-repeat:no-repeat;
+    }
+
+    :host ::content .charts{
+      @apply(--layout-vertical);
+    }
+
+    :host ::content .charts > paper-card{
+      @apply(--layout-flex);
+    }
+
+    :host ::content .charts > paper-card > .card-content{
+      @apply(--layout-horizontal);
+    }
+
+    :host ::content .chart{
+      width: 50vw;
+      height: 50vw;
+    }
+
+    :host ::content #velocityCharts{
+      @apply(--layout-vertical);
+    }
+
+    :host ::content #velocityCharts .chart{
+      width: 50vw;
+      height: 25vw;
+    }
+  </style>
+
+  <template>
+      <bobotics-socket hidden id="trajectorySocket" host$="[[server]]" path="trajectory"></bobotics-socket>
+      <bobotics-socket hidden id="trajectoryProgressSocket" host$="[[server]]" path="trajectory/progress"></bobotics-socket>
+
+      <div class="charts">
+        <paper-card>
+          <div class="card-content">
+            <div id="velocityCharts">
+              <div id="leftVelocity" class="chart"></div>
+              <div id="rightVelocity" class="chart"></div>
+            </div>
+
+          </div>
+        </paper-card>
+      </div>
+    <content></content>
+  </template>
+
+</dom-module>
+
+<script>
+
+  Polymer({
+
+    is: 'bobotics-velocity-chart',
+
+    behaviors: [
+      Polymer.IronResizableBehavior
+    ],
+
+    listeners: {
+      'trajectorySocket.message-change': 'onTrajectoryChange',
+      'trajectoryProgressSocket.message-change': 'onTrajectoryProgressChange',
+      "iron-resize" : "onResize"
+    },
+
+    properties: {
+
+      server: {
+        type: String,
+        value: "localhost:5803"
+      },
+
+      isReady: {
+        type: Boolean,
+        value: false
+      },
+
+      robot: {
+        type: Object,
+        value: function(){
+          return {"dt":.01,"acc":12,"jerk":12,"vel":15}
+        }
+      },
+
+      waypoints: {
+        type: Array,
+        value: function(){
+          return [{"x":0,"y":0,"theta":0},{"x":11,"y":0,"theta":0},{"x":21,"y":-9,"theta":-60}]
+        }
+      },
+
+      velocityVsTime: {
+        type: Object,
+        value: function(){
+          return null;
+        }
+      },
+    },
+
+    // Element Lifecycle
+
+    ready: function() {
+      // `ready` is called after all elements have been configured, but
+      // propagates bottom-up. This element's children are ready, but parents
+      // are not.
+      //
+      // This is the point where you should make modifications to the DOM (when
+      // necessary), or kick off any processes the element wants to perform.
+      this.$.trajectorySocket.connect();
+      this.$.trajectoryProgressSocket.connect();
+    },
+
+    attached: function() {
+      // `attached` fires once the element and its parents have been inserted
+      // into a document.
+      //
+      // This is a good place to perform any work related to your element's
+      // visual state or active behavior (measuring sizes, beginning animations,
+      // loading resources, etc).
+    },
+
+    detached: function() {
+      // The analog to `attached`, `detached` fires when the element has been
+      // removed from a document.
+      //
+      // Use this to clean up anything you did in `attached`.
+    },
+
+    chartReady: function (){
+      this.set("isReady", true);
+    },
+
+    onTrajectoryProgressChange: function(event){
+      var leftProgress = event.detail.leftProgress;
+      var rightProgress = event.detail.rightProgress;
+
+      this.leftVelocity.dataProvider.push({"bx": leftProgress.elapsedTime, "by": leftProgress.actualVelocity *.8,});
+      this.rightVelocity.dataProvider.push({"bx": rightProgress.elapsedTime, "by": rightProgress.actualVelocity *.8,});
+
+      this.debounce("redraw", function(){
+        this.rightVelocity.validateData();
+        this.leftVelocity.validateData();
+      }.bind(this), 50);
+
+    },
+
+    onTrajectoryChange: function(event){
+      var leftProfile = event.detail.leftProfile;
+      var rightProfile = event.detail.rightProfile;
+
+      var leftPoints = new Array();
+      var rightPoints = new Array();
+
+      var totalTime = 0;
+      for(var i = 0; i < leftProfile.numPoints; i++){
+        var point = leftProfile.points[i];
+        totalTime += point[2];
+        leftPoints.push({'ax': totalTime, 'ay': point[1]});
+      }
+
+      totalTime = 0;
+      for(var i = 0; i < rightProfile.numPoints; i++){
+        var point = rightProfile.points[i];
+        totalTime += point[2];
+        rightPoints.push({'ax': totalTime, 'ay': point[1]});
+      }
+
+      this.leftVelocity = AmCharts.makeChart( "leftVelocity", {
+        "type": "xy",
+        "theme": "light",
+        "dataProvider": leftPoints,
+        "valueAxes": [ {
+          "position": "bottom",
+          "dashLength": 1,
+          "id": "x"
+        }, {
+          "dashLength": 1,
+          "position": "left",
+          "id": "y"
+        } ],
+        "graphs": [ {
+          "balloonText": "x:[[x]] y:[[y]]",
+          "lineAlpha": 1,
+          "fillAlphas":.2,
+          "xField": "ax",
+          "yField": "ay",
+          "lineColor": "#999999"
+        }, {
+          "balloonText": "x:[[x]] y:[[y]]",
+          "lineAlpha": 1,
+          "fillAlphas":.5,
+          "xField": "bx",
+          "yField": "by",
+          "lineColor": "#3f51b5"
+        } ]
+      } );
+
+      this.rightVelocity = AmCharts.makeChart( "rightVelocity", {
+        "type": "xy",
+        "theme": "light",
+        "dataProvider": rightPoints,
+        "valueAxes": [ {
+          "position": "bottom",
+          "dashLength": 1,
+          "id": "x"
+        }, {
+          "dashLength": 1,
+          "position": "left",
+          "id": "y"
+        } ],
+        "graphs": [ {
+          "balloonText": "x:[[x]] y:[[y]]",
+          "lineAlpha": 1,
+          "fillAlphas":.2,
+          "xField": "ax",
+          "yField": "ay",
+          "lineColor": "#999999"
+        }, {
+          "balloonText": "x:[[x]] y:[[y]]",
+          "lineAlpha": 1,
+          "fillAlphas":.5,
+          "xField": "bx",
+          "yField": "by",
+          "lineColor": "#3f51b5"
+        } ]
+      } );
+    },
+      /**
+
+      this.rightVelocity = AmCharts.makeChart("rightVelocity", {
+        "type": "serial",
+        "theme": "light",
+        "titles": [{"text": "right drive"}],
+        "dataProvider": rightPoints,
+        "valueAxes": [{
+          "axisAlpha": 0,
+          "position": "left"
+        }],
+        "graphs": [{
+          "id":"g1",
+          "balloonText": "[[category]]<br><b><span style='font-size:14px;'>[[left]]</span></b>",
+          "fillAlphas":.2,
+          "lineColor": "#999999",
+          "lineThickness": 2,
+          "type": "smoothedLine",
+          "valueField": "vel"
+        },{
+          "id":"g2",
+          "balloonText": "[[category]]<br><b><span style='font-size:14px;'>[[left]]</span></b>",
+          "lineColor": "#3f51b5",
+          "fillAlphas":.5,
+          "lineThickness": 2,
+          "type": "smoothedLine",
+          "valueField": "act"
+        }],
+        "categoryField": "time"
+      });
+       **/
+    saveRobot: function(){
+      this;
+    },
+    onResize: function(){
+
+    }
+
+  });
+
+</script>

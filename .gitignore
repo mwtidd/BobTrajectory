@@ -1,1 +1,7 @@
 /bin/
+/build/
+/config/
+/dist/
+/log/
+/trajectories/
+/paths/

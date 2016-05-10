@@ -1,0 +1,264 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<link rel="import" href="../polymer/polymer.html">
+
+<!--
+An element to start from.
+
+Example:
+
+    <bobotics-socket></bobotics-socket>
+
+@demo
+-->
+<dom-module id="bobotics-socket">
+
+    <style>
+        :host {
+
+        }
+    </style>
+
+    <template>
+        <content></content>
+    </template>
+
+</dom-module>
+
+<script>
+
+    Polymer({
+
+        is: 'bobotics-socket',
+
+        properties: {
+
+            state: {
+                type: Boolean,
+                value: false
+            },
+
+            reconnectTimeout: {
+                type: Object,
+                value: function(){
+                    return null;
+                }
+            },
+
+            socketOpen: {
+                type: Boolean,
+                value: false
+            },
+
+            host: {
+                type: String,
+                value: window.location.host
+            },
+
+            path: {
+                type: String,
+                value: ""
+            },
+
+            ws: {
+                type: Object,
+                value: function(){
+                    return null;
+                }
+            },
+
+            subsystems: {
+                type: Object,
+                value: function(){
+                    return null;
+                }
+            },
+
+            subscribed: {
+                type: Array,
+                value: function(){
+                    return [];
+                }
+            },
+
+        },
+
+        // Element Lifecycle
+
+        ready: function () {
+            // `ready` is called after all elements have been configured, but
+            // propagates bottom-up. This element's children are ready, but parents
+            // are not.
+            //
+            // This is the point where you should make modifications to the DOM (when
+            // necessary), or kick off any processes the element wants to perform.
+
+            //this.connect();
+
+            /**
+            var options = {
+                "video" : true
+            };
+
+            // use the chrome specific GetUserMedia function
+
+            navigator.webkitGetUserMedia(options, function(stream) {
+                video.src = URL.createObjectURL(stream);
+            }, function(err) {
+                console.log("Unable to get video stream!")
+            });
+             **/
+
+
+
+
+            /**
+            this.set("dataApi", new this.dataApi(function () {
+                this.generateButtons()
+            }));
+             **/
+        },
+
+        attached: function () {
+            // `attached` fires once the element and its parents have been inserted
+            // into a document.
+            //
+            // This is a good place to perform any work related to your element's
+            // visual state or active behavior (measuring sizes, beginning animations,
+            // loading resources, etc).
+        },
+
+        detached: function () {
+            // The analog to `attached`, `detached` fires when the element has been
+            // removed from a document.
+            //
+            // Use this to clean up anything you did in `attached`.
+        },
+
+        // Element Behavior
+
+        connect: function(){
+            this.set("ws", new WebSocket("ws://"+this.host+"/" + this.path));
+            this.ws.binaryType = "arraybuffer";
+
+            this.ws.onopen = this.socketOpened.bind(this);
+
+            this.ws.onclose = this.socketClosed.bind(this);
+
+            this.ws.onmessage = this.gotMessage.bind(this);
+
+            this.ws.onerror = this.socketError.bind(this);
+        },
+
+        pause: function () {
+            if (this.state === false) {
+                //chart.dataProvider = [];
+            }
+            this.set("state",!state);
+            //chart.validateData();
+        },
+
+        access: function (stream) {
+            var hasStream = data.contains(data.getSubscribe(), stream);
+            if (hasStream) {
+                data.unsubscribe([stream])
+                removeChart(stream)
+            } else {
+                data.subscribe([stream], chartCallBack)
+                addChart(stream)
+            }
+        },
+
+        contains: function (array, stream) {
+            for (var i = 0; i < array.length; i++) {
+                if (array[i] == stream) {
+                    return true;
+                }
+            }
+            return false
+        },
+
+
+        gotDashboard: function(event){
+            this.set("subsystems",event.detail.response);
+            //this.internalNetworkRequestCallBack();
+            //this.subsystemCallback();
+        },
+        internalNetworkRequestCallBack: function(){
+            var _self = this;
+            setTimeout(function () {
+                _self.ws.send(JSON.stringify({"action": "subscribe", "keys": ["robot.robotTime"]}))
+            }, 500)
+        },
+
+        sendJson: function(json){
+            if(this.socketOpen){
+                this.ws.send(JSON.stringify(json));
+            }
+        },
+
+        sendString: function(string){
+            if(this.socketOpen){
+                this.ws.send(string);
+            }
+        },
+
+        sendPing: function(){
+            this.ws.send("ping");
+        },
+
+        gotMessage: function(message){
+            if(message.data == "pong"){
+                setTimeout(function(){
+                    this.sendPing();
+                }.bind(this),250);
+            }else{
+                console.log("got message...");
+                this.set("message", message.data);
+                try{
+                    this.fire("message-change", JSON.parse(message.data));
+                }catch(e){
+                    this.fire("message-change", message.data);
+                }
+            }
+
+        },
+
+        socketOpened: function(){
+            console.log( this.host + " connected");
+            this.set("socketOpen", true);
+            this.sendPing();
+            this.fire("connected");
+        },
+
+        socketClosed: function(){
+            window.setTimeout(function(){
+                this.connect();
+            }.bind(this), 500);
+            console.log( this.host + " disconnected");
+            this.set("socketOpen", false);
+            this.fire("disconnected");
+        },
+
+        socketError: function(){
+            if(this.reconnectTimeout){
+                window.clearInterval(this.reconnectTimeout);
+            }
+            this.reconnectTimeout = window.setTimeout(function(){
+                this.connect();
+            }.bind(this), 500);
+            this.set("socketOpen", false);
+            this.fire("error");
+        }
+
+
+    });
+
+</script>

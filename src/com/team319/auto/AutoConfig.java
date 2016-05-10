@@ -9,6 +9,9 @@ public class AutoConfig {
 	private SelectedAuto selectedAuto;
 	private String selectedAlliance;
 
+	public String __class = AutoConfig.class.getName();
+
+
 	public AutoConfig() {
 		selectedAuto = new SelectedAuto();
 		selectedAlliance = "red";

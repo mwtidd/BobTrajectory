@@ -17,8 +17,6 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.team319.auto.AutoConfig;
-import com.team319.auto.AutoModes;
 
 public class ConfigManager {
 
@@ -109,6 +107,8 @@ public class ConfigManager {
 			DriveConfig config = mapper.readValue(everything, DriveConfig.class);
 
 			this.setConfig(config);
+
+			br.close();
 
 		}catch (FileNotFoundException e) {
 			logger.error("File Error");
